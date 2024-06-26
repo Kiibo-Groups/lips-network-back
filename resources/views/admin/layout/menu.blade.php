@@ -16,7 +16,7 @@
 <div class="admin-sidebar-wrapper js-scrollbar">
 	<ul class="menu">
 		<!-- Dashboard -->
-		<li class="menu-item @if($page === 'home' || $page == 'setting' || $page == 'category' || $page == 'text' || $page == 'page') active @endif">
+		<li class="menu-item @if($page === 'home' || $page == 'setting' || $page == 'category' || $page == 'text' || $page == 'page') active opened @endif">
 			<a href="#" class="open-dropdown menu-link">
 				<span class="menu-icon">
 					<i class="icon-placeholder mdi mdi-shape-outline "></i>
@@ -24,15 +24,15 @@
 
 				<span class="menu-label">
 					<span class="menu-name">
-						Dashboard
+						Dashboard {{$page}}
 						<span class="menu-arrow"></span>
 					</span>
 				</span>
 			</a>
 			<!--submenu-->
-			<ul class="sub-menu">
+			<ul class="sub-menu" @if($page === 'home' || $page == 'setting' || $page == 'category' || $page == 'text' || $page == 'page') style="display: block;" @endif>
 				@if($admin->hasPerm('Dashboard - Inicio'))
-				<li class="menu-item">
+				<li class="menu-item @if($page === 'home') active @endif">
 					<a href="{{ Asset(env('admin').'/home') }}" class=" menu-link">
 						<span class="menu-icon">
 							<i class="icon-placeholder  mdi mdi-home"></i>
@@ -45,7 +45,7 @@
 				@endif
 
 				@if($admin->hasPerm('Dashboard - Configuraciones'))
-				<li class="menu-item ">
+				<li class="menu-item @if($page === 'setting') active @endif">
 					<a href="{{ Asset(env('admin').'/setting') }}" class=" menu-link">
 						<span class="menu-icon">
 							<i class="icon-placeholder  mdi mdi-message-settings-variant"></i>
@@ -58,7 +58,7 @@
 				@endif
 
 				@if($admin->hasPerm('Dashboard - Categorias'))
-				<li class="menu-item ">
+				<li class="menu-item @if($page === 'category') active @endif">
 					<a href="{{ Asset(env('admin').'/category') }}" class=" menu-link">
 						<span class="menu-icon">
 							<i class="icon-placeholder  mdi mdi-message-settings-variant"></i>
@@ -84,22 +84,22 @@
 		</li>
 		<!-- Dashboard -->
   
-		<!-- Banners 
+		<!-- Banners -->
 		@if($admin->hasPerm('Banners'))
 		<li class="menu-item @if($page === 'banner') active @endif">
 			<a href="{{ Asset(env('admin').'/banner') }}" class="menu-link">
+				<span class="menu-icon">
+					<i class="icon-placeholder mdi mdi-image-filter "></i>
+				</span>
 				<span class="menu-label">
 					<span class="menu-name">
 						Banners
 					</span>
-				</span>
-				<span class="menu-icon">
-					<i class="icon-placeholder mdi mdi-image-filter "></i>
-				</span>
+				</span> 
 			</a>
 		</li>
 		@endif
-	 	Banners -->
+	 	<!-- Banners -->
  
 		<!-- Negocios -->
 		@if($admin->hasPerm('Adminisrtar Restaurantes'))
