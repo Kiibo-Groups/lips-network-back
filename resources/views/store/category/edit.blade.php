@@ -1,4 +1,4 @@
-@extends('user.layout.main')
+@extends('store.layout.main')
 
 @section('title') Editar detalles @endsection
 
@@ -15,7 +15,7 @@
 <div class="card-body">
 {!! Form::model($data, ['url' => [$form_url],'files' => true,'method' => 'PATCH'],['class' => 'col s12']) !!}
 
-@include('user.category.form')
+@include('store.category.form')
 
 </form>
 </div>

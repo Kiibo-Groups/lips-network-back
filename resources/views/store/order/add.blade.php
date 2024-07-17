@@ -1,4 +1,4 @@
-@extends('user.layout.main')
+@extends('store.layout.main')
 
 @section('title') Add New Order @endsection
 
@@ -14,7 +14,7 @@
 
 {!! Form::open(['url' => [$form_url],'files' => true,'method' => 'POST'],['class' => 'col s12']) !!}
 
-@include('user.order.form')
+@include('store.order.form')
 
 </form>
 </div>

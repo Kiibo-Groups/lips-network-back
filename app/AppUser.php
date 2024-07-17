@@ -48,42 +48,13 @@ class AppUser extends Authenticatable
         if (isset($data['user_id']) && $data['user_id'] != 'null') {
             // Intentamos con el id
             $res = AppUser::find($data['user_id']);
-
             if (isset($res->id)) {
-                /**
-                 * Hasta este punto el usuario ya tiene una sesion iniciada, ya comprobo el numero telefonico
-                 * y esta intentando registrarlo
-                 * Comprobamos que el numero telefonico que intenta agregar no exista con otra cuenta
-                 * en caso contrario se le pedira un nuevo numero telefonico
-                */
-
-                $req = AppUser::where('phone',$data['phone'])->first();
-                if ($req) {
-                    // El numero telefonico existe con otra cuenta
-                    return ['msg' => 'phone_exist'];
-                }else {
-                    // Si el numero telefonico no existe lo Registramos
-                    $res->phone = $data['phone'];
-                    $res->save();
-                    return ['msg' => 'user_exist', 'user_id' => $res->id];
-                }
-
+                return ['msg' => 'user_exist', 'user_id' => $res->id, 'data' => $res];
             }else {
                 return ['msg' => 'not_exist'];
             }
         }else {
-            /**
-             * Hasta este punto el usuario ya se registro previamente
-             * ingreso un numero telefonico y lo comprobo con codigo SMS
-             * verificamos si el numero de telefono existe
-            */
-
-            $res = AppUser::where('phone',$data['phone'])->first();
-            if ($res) {
-                return ['msg' => 'user_exist', 'user_id' => $res->id];
-            }else {
-                return ['msg' => 'not_exist'];
-            }
+            return ['msg' => 'not_exist'];
         }
    }
 

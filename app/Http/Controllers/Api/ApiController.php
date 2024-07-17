@@ -40,8 +40,7 @@ class ApiController extends Controller {
 
 	public function welcome()
 	{
-		$res = new Slider;
-
+		$res = new Slider; 
 		return response()->json(['data' => $res->getAppData()]);
 	}
 
@@ -100,25 +99,20 @@ class ApiController extends Controller {
 		
 	}
 
-	public function homepage($city_id)
+	public function homepage()
 	{
 		$banner  = new Banner;
 		$store   = new User;
 		$text    = new Text;
 		$offer   = new Offer;
-		$cats    = new CategoryStore;
-		$l 		 = Language::find($_GET['lid']);
+		$cats    = new CategoryStore; 
 
 		$data = [
 			'admin'		=> Admin::find(1),
-			'banner'	=> $banner->getAppData($city_id,0),
-			'middle'	=> $banner->getAppData($city_id,1),
-			'bottom'	=> $banner->getAppData($city_id,2),
-			'store'		=> $store->getAppData($city_id),
-			'trending'	=> $store->InTrending($city_id), //$store->getAppData($city_id,true),
-			'Categorys' => $cats->getAllCats(),
-			'offers'    => $offer->getAll(0),
-			'Tot_stores'=> $store->getTotsStores($city_id)
+			'banner'	=> $banner->getAppData(1,0),
+			'store'		=> $store->getAppData(1),
+			'trending'	=> $store->InTrending(1), //$store->getAppData($city_id,true),
+			'Categorys' => $cats->getAllCats()
 		];
 
 		return response()->json(['data' => $data]);
@@ -150,9 +144,7 @@ class ApiController extends Controller {
 	public function getStore($id)
 	{
 		
-		$store   = new User;
-		
-		
+		$store   = new User;  
 		return response()->json(['data' => $store->getStore($id)]);
 	}
 
@@ -269,9 +261,12 @@ class ApiController extends Controller {
 
 	public function signup(Request $Request)
 	{
-		$res = new AppUser;
-
-		return response()->json($res->addNew($Request->all()));
+		try {
+			$res = new AppUser;
+			return response()->json($res->addNew($Request->all()));
+		} catch (\Throwable $th) {
+			return response()->json(['msg' => 'error', 'error' => $th->getMessage()]);
+		}
 	}
 
 	public function sendOTP(Request $Request)
@@ -298,8 +293,7 @@ class ApiController extends Controller {
 
 	public function login(Request $Request)
 	{
-		$res = new AppUser;
-
+		$res = new AppUser; 
 		return response()->json($res->login($Request->all()));
 	}
 
@@ -318,8 +312,7 @@ class ApiController extends Controller {
 
 	public function verify(Request $Request)
 	{
-		$res = new AppUser;
-
+		$res = new AppUser; 
 		return response()->json($res->verify($Request->all()));
 	}
 

@@ -1,4 +1,4 @@
-@include('user.order.dispatch')
+@include('store.order.dispatch')
 
 @if($row->status == 0)
 

@@ -1,4 +1,4 @@
-@extends('user.layout.main')
+@extends('store.layout.main')
 
 @section('title') {{ $title }} @endsection
 
@@ -29,7 +29,7 @@
     <tbody>
 
     @foreach($data as $row)
-    @include('user.order.info_pay')
+    @include('store.order.info_pay')
     <tr>
     <td width="6%">#{{ $row->id }}</td>
     <td width="12%">{{ $row->name }}<br>{{ $row->phone }}</td>
@@ -92,7 +92,7 @@
 
     <td width="20%" style="text-align: right">
 
-    @include('user.order.action')
+    @include('store.order.action')
 
     </td>
     </tr>

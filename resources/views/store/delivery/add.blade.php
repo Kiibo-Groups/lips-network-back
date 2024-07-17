@@ -1,4 +1,4 @@
-@extends('user.layout.main')
+@extends('store.layout.main')
 
 @section('title') Agregar Nuevo @endsection
 
@@ -14,7 +14,7 @@
 <div class="card-body">
 {!! Form::model($data, ['url' => [$form_url],'files' => true],['class' => 'col s12']) !!}
 
-@include('user.delivery.form')
+@include('store.delivery.form')
 
 </form>
 </div>

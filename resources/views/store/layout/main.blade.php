@@ -38,13 +38,13 @@
 <body class="sidebar-pinned ">
 <aside class="admin-sidebar">
 
-@include('user.layout.menu')
+@include('store.layout.menu')
 
 </aside>
 <main class="admin-main">
 <header class="admin-header">
 
-@include('user.layout.header')
+@include('store.layout.header')
 
 </header>
 <section class="admin-content">

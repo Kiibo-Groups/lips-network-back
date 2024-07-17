@@ -1,4 +1,4 @@
-@extends('user.layout.main')
+@extends('store.layout.main')
 
 @section('title') Upload Excel File @endsection
 

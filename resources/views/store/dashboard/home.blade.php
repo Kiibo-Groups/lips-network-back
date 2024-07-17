@@ -1,4 +1,4 @@
-@extends('user.layout.main')
+@extends('store.layout.main')
 
 @section('title') Bienvenido(a) ! {{ Auth::user()->name }} @endsection
 
@@ -49,9 +49,9 @@
     </div>
 </div>
 
-@include('user.dashboard.overview')
+@include('store.dashboard.overview')
 
-@include('user.dashboard.chart')
+@include('store.dashboard.chart')
 
 
 </div>

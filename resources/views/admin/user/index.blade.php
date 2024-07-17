@@ -19,8 +19,7 @@
                         <table class="table table-hover ">
                             <thead>
                                 <tr> 
-                                    <th>Nombre</th>
-                                    <th>Ciudad</th>
+                                    <th>Nombre</th> 
                                     <th>Status</th>
                                     <th>Trending</th>
                                     <th>Comentarios</th>
@@ -35,8 +34,7 @@
                                         <small>
                                             {{ $row->Cat }}
                                         </small>
-                                    </td>
-                                    <td width="20%">{{ $row->city }}</td>
+                                    </td> 
                                     <td width="10%">
                                         @if($row->status == 0)
                                         <button type="button" class="btn btn-sm m-b-15 ml-2 mr-2 btn-info" onclick="confirmAlert('{{ Asset($link.'status/'.$row->id) }}')">Active</button>
@@ -89,12 +87,7 @@
                                                     Ingresar como
                                                 </a>
                                             </li>
-                                            <!-- Reset Saldos -->
-                                            <li>
-                                                <a href="{{ Asset($link.'pay/'.$row->id) }}" class="dropdown-item">
-                                                    Agregar Pago
-                                                </a>
-                                            </li>
+                                             
                                             <!-- ViewInfo -->
                                             <li>
                                                 <a href="javascript::void()" class="dropdown-item" onclick="showMsg('Username : {{ $row->email }}<br>Password : {{ $row->shw_password }}')">

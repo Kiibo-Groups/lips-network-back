@@ -103,19 +103,19 @@ class User extends Authenticatable
         if(isset($data['img']))
         {
             $filename   = time().rand(111,699).'.' .$data['img']->getClientOriginalExtension(); 
-            $data['img']->move("upload/user/", $filename);   
+            $data['img']->move("public/upload/user/", $filename);   
             $add->img = $filename;   
         }
         if(isset($data['logo']))
         {
             $filename   = time().rand(111,699).'.' .$data['logo']->getClientOriginalExtension(); 
-            $data['logo']->move("upload/user/logo/", $filename);   
+            $data['logo']->move("public/upload/user/logo/", $filename);   
             $add->logo = $filename;
         }
 
         if (isset($data['img_discount'])) {
             $filename   = time().rand(111,699).'.' .$data['img_discount']->getClientOriginalExtension(); 
-            $data['img_discount']->move("upload/user_discount/", $filename);   
+            $data['img_discount']->move("public/upload/user_discount/", $filename);   
             $add->img_discount = $filename;   
         }
 
@@ -182,12 +182,9 @@ class User extends Authenticatable
     public function getAll($city_id = 0)
     {
         return User::where(function($query) use($city_id){
-            if ($city_id > 0) {
-                $query->where('users.city_id',$city_id);
-            }
-        })->join('city','users.city_id','=','city.id')
-                   ->leftjoin('categorystore','users.type','=','categorystore.id')
-                   ->select('categorystore.name as Cat','users.*','city.name as city')
+             
+        })->leftjoin('categorystore','users.type','=','categorystore.id')
+                   ->select('categorystore.name as Cat','users.*')
                    ->orderBy('users.id','DESC')->get();
     }
 
@@ -198,7 +195,7 @@ class User extends Authenticatable
         
         $res  = User::where(function($query) use($city_id,$trending){
 
-            $query->where('status',0)->where('city_id',$city_id);
+            $query->where('status',0);
 
             if(isset($_GET['banner']))
             {
@@ -337,17 +334,10 @@ class User extends Authenticatable
 
     public function getStore($id)
     {
-        $currency   = Admin::find(1)->currency;
-        $lat        = isset($_GET['lat']) ? $_GET['lat'] : 0;
-        $lon        = isset($_GET['lng']) ? $_GET['lng'] : 0;
+        $currency   = Admin::find(1)->currency; 
         $user_id    = isset($_GET['user_id']) ? $_GET['user_id'] : 0;
 
-        $res  = User::where('id',$id)->select('users.*',DB::raw("6371 * acos(cos(radians(" . $lat . ")) 
-                * cos(radians(users.lat)) 
-                * cos(radians(users.lng) - radians(" . $lon . ")) 
-                + sin(radians(" .$lat. ")) 
-                * sin(radians(users.lat))) AS distance"))
-                ->orderBy('id','DESC')->get();
+        $res  = User::where('id',$id)->orderBy('id','DESC')->get();
         
         $data = [];
 
@@ -388,10 +378,10 @@ class User extends Authenticatable
 
             $data[] = [
                 'id'            => $row->id,
-                'title'         => $this->getLang($row->id,$_GET['lid'])['name'],
+                'title'         => $this->getLang($row->id,0)['name'],
                 'img'           => Asset('upload/user/'.$row->img),
                 'logo'           => Asset('upload/user/logo/'.$row->logo),
-                'address'       => $this->getLang($row->id,$_GET['lid'])['address'],
+                'address'       => $this->getLang($row->id,0)['address'],
                 'open'          => $open,
                 'trending'      => $row->trending,
                 'phone'         => $row->phone,
@@ -405,11 +395,7 @@ class User extends Authenticatable
                 'currency'      => $currency,
                 'items'         => $this->menuItem($row->id,$row->c_type,$row->c_value),
                 'items_trend'   => $this->menuTrend($row->id),
-                'max_distance'  => $this->GetMax_distance($row->id,$row->distance_max,$lat,$lon),
                 'delivery_charges_value' => $this->SetCommShip($row->id,$row->p_staff,$row->distance_max,$row->distance),
-                'distance'      => bcdiv($row->distance,'1',2),
-                "distance_max"  => $row->distance_max,
-                'km'            => round($row->distance,2),
                 'favorite'      => $favorite
             ];
             
@@ -483,10 +469,10 @@ class User extends Authenticatable
             if ($open == true) {
                 $open_store[] = [
                     'id'            => $row->id,
-                    'title'         => $this->getLang($row->id,$_GET['lid'])['name'],
+                    'title'         => $this->getLang($row->id,0)['name'],
                     'img'           => Asset('upload/user/'.$row->img),
                     'logo'           => Asset('upload/user/logo/'.$row->logo),
-                    'address'       => $this->getLang($row->id,$_GET['lid'])['address'],
+                    'address'       => $this->getLang($row->id,0)['address'],
                     'open'          => $open,
                     'rating'        => $avg > 0 ? number_format($avg, 1) : '0.0',
                     'person_cost'   => $row->person_cost,
@@ -502,10 +488,10 @@ class User extends Authenticatable
             }else {
                 $close_store[] = [
                     'id'            => $row->id,
-                    'title'         => $this->getLang($row->id,$_GET['lid'])['name'],
+                    'title'         => $this->getLang($row->id,0)['name'],
                     'img'           => Asset('upload/user/'.$row->img),
                     'logo'           => Asset('upload/user/logo/'.$row->logo),
-                    'address'       => $this->getLang($row->id,$_GET['lid'])['address'],
+                    'address'       => $this->getLang($row->id,0)['address'],
                     'open'          => $open,
                     'rating'        => $avg > 0 ? number_format($avg, 1) : '0.0',
                     'person_cost'   => $row->person_cost,
@@ -606,10 +592,10 @@ class User extends Authenticatable
                         if ($type_filter == 0) { // Mas Recientes
                             $data[] = [
                                 'id'            => $row->id,
-                                'title'         => $this->getLang($row->id,$_GET['lid'])['name'],
+                                'title'         => $this->getLang($row->id,0)['name'],
                                 'img'           => Asset('upload/user/'.$row->img),
                                 'logo'           => Asset('upload/user/logo/'.$row->logo),
-                                'address'       => $this->getLang($row->id,$_GET['lid'])['address'],
+                                'address'       => $this->getLang($row->id,0)['address'],
                                 'open'          => $open,
                                 'rating'        => $avg > 0 ? number_format($avg, 1) : '0.0',
                                 'delivery_time' => $row->delivery_time,
@@ -628,10 +614,10 @@ class User extends Authenticatable
                             if ($offers->count() > 0) { // el comercio tiene ofertas
                                 $data[] = [
                                     'id'            => $row->id,
-                                    'title'         => $this->getLang($row->id,$_GET['lid'])['name'],
+                                    'title'         => $this->getLang($row->id,0)['name'],
                                     'img'           => Asset('upload/user/'.$row->img),
                                     'logo'           => Asset('upload/user/logo/'.$row->logo),
-                                    'address'       => $this->getLang($row->id,$_GET['lid'])['address'],
+                                    'address'       => $this->getLang($row->id,0)['address'],
                                     'open'          => $open,
                                     'rating'        => $avg > 0 ? number_format($avg, 1) : '0.0',
                                     'delivery_time' => $row->delivery_time,
@@ -650,10 +636,10 @@ class User extends Authenticatable
                             if ($row->trending) {
                                 $data[] = [
                                     'id'            => $row->id,
-                                    'title'         => $this->getLang($row->id,$_GET['lid'])['name'],
+                                    'title'         => $this->getLang($row->id,0)['name'],
                                     'img'           => Asset('upload/user/'.$row->img),
                                     'logo'           => Asset('upload/user/logo/'.$row->logo),
-                                    'address'       => $this->getLang($row->id,$_GET['lid'])['address'],
+                                    'address'       => $this->getLang($row->id,0)['address'],
                                     'open'          => $open,
                                     'rating'        => $avg > 0 ? number_format($avg, 1) : '0.0',
                                     'delivery_time' => $row->delivery_time,
@@ -670,10 +656,10 @@ class User extends Authenticatable
                         }else {
                             $data[] = [
                                 'id'            => $row->id,
-                                'title'         => $this->getLang($row->id,$_GET['lid'])['name'],
+                                'title'         => $this->getLang($row->id,0)['name'],
                                 'img'           => Asset('upload/user/'.$row->img),
                                 'logo'           => Asset('upload/user/logo/'.$row->logo),
-                                'address'       => $this->getLang($row->id,$_GET['lid'])['address'],
+                                'address'       => $this->getLang($row->id,0)['address'],
                                 'open'          => $open,
                                 'rating'        => $avg > 0 ? number_format($avg, 1) : '0.0',
                                 'delivery_time' => $row->delivery_time,
@@ -692,10 +678,10 @@ class User extends Authenticatable
                             if ($type_filter == 0) { // Mas Recientes
                                 $data[] = [
                                     'id'            => $row->id,
-                                    'title'         => $this->getLang($row->id,$_GET['lid'])['name'],
+                                    'title'         => $this->getLang($row->id,0)['name'],
                                     'img'           => Asset('upload/user/'.$row->img),
                                     'logo'           => Asset('upload/user/logo/'.$row->logo),
-                                    'address'       => $this->getLang($row->id,$_GET['lid'])['address'],
+                                    'address'       => $this->getLang($row->id,0)['address'],
                                     'open'          => $open,
                                     'rating'        => $avg > 0 ? number_format($avg, 1) : '0.0',
                                     'delivery_time' => $row->delivery_time,
@@ -714,10 +700,10 @@ class User extends Authenticatable
                                 if ($offers->count() > 0) { // el comercio tiene ofertas
                                     $data[] = [
                                         'id'            => $row->id,
-                                        'title'         => $this->getLang($row->id,$_GET['lid'])['name'],
+                                        'title'         => $this->getLang($row->id,0)['name'],
                                         'img'           => Asset('upload/user/'.$row->img),
                                         'logo'           => Asset('upload/user/logo/'.$row->logo),
-                                        'address'       => $this->getLang($row->id,$_GET['lid'])['address'],
+                                        'address'       => $this->getLang($row->id,0)['address'],
                                         'open'          => $open,
                                         'rating'        => $avg > 0 ? number_format($avg, 1) : '0.0',
                                         'delivery_time' => $row->delivery_time,
@@ -736,10 +722,10 @@ class User extends Authenticatable
                                 if ($row->trending) {
                                     $data[] = [
                                         'id'            => $row->id,
-                                        'title'         => $this->getLang($row->id,$_GET['lid'])['name'],
+                                        'title'         => $this->getLang($row->id,0)['name'],
                                         'img'           => Asset('upload/user/'.$row->img),
                                         'logo'           => Asset('upload/user/logo/'.$row->logo),
-                                        'address'       => $this->getLang($row->id,$_GET['lid'])['address'],
+                                        'address'       => $this->getLang($row->id,0)['address'],
                                         'open'          => $open,
                                         'rating'        => $avg > 0 ? number_format($avg, 1) : '0.0',
                                         'delivery_time' => $row->delivery_time,
@@ -756,10 +742,10 @@ class User extends Authenticatable
                             }else {
                                 $data[] = [
                                     'id'            => $row->id,
-                                    'title'         => $this->getLang($row->id,$_GET['lid'])['name'],
+                                    'title'         => $this->getLang($row->id,0)['name'],
                                     'img'           => Asset('upload/user/'.$row->img),
                                     'logo'           => Asset('upload/user/logo/'.$row->logo),
-                                    'address'       => $this->getLang($row->id,$_GET['lid'])['address'],
+                                    'address'       => $this->getLang($row->id,0)['address'],
                                     'open'          => $open,
                                     'rating'        => $avg > 0 ? number_format($avg, 1) : '0.0',
                                     'delivery_time' => $row->delivery_time,
@@ -782,10 +768,10 @@ class User extends Authenticatable
                         if ($type_filter == 0) { // Mas Recientes
                             $data[] = [
                                 'id'            => $row->id,
-                                'title'         => $this->getLang($row->id,$_GET['lid'])['name'],
+                                'title'         => $this->getLang($row->id,0)['name'],
                                 'img'           => Asset('upload/user/'.$row->img),
                                 'logo'           => Asset('upload/user/logo/'.$row->logo),
-                                'address'       => $this->getLang($row->id,$_GET['lid'])['address'],
+                                'address'       => $this->getLang($row->id,0)['address'],
                                 'open'          => $open,
                                 'rating'        => $avg > 0 ? number_format($avg, 1) : '0.0',
                                 'delivery_time' => $row->delivery_time,
@@ -804,10 +790,10 @@ class User extends Authenticatable
                             if ($offers->count() > 0) { // el comercio tiene ofertas
                                 $data[] = [
                                     'id'            => $row->id,
-                                    'title'         => $this->getLang($row->id,$_GET['lid'])['name'],
+                                    'title'         => $this->getLang($row->id,0)['name'],
                                     'img'           => Asset('upload/user/'.$row->img),
                                     'logo'           => Asset('upload/user/logo/'.$row->logo),
-                                    'address'       => $this->getLang($row->id,$_GET['lid'])['address'],
+                                    'address'       => $this->getLang($row->id,0)['address'],
                                     'open'          => $open,
                                     'rating'        => $avg > 0 ? number_format($avg, 1) : '0.0',
                                     'delivery_time' => $row->delivery_time,
@@ -826,10 +812,10 @@ class User extends Authenticatable
                             if ($row->trending) {
                                 $data[] = [
                                     'id'            => $row->id,
-                                    'title'         => $this->getLang($row->id,$_GET['lid'])['name'],
+                                    'title'         => $this->getLang($row->id,0)['name'],
                                     'img'           => Asset('upload/user/'.$row->img),
                                     'logo'           => Asset('upload/user/logo/'.$row->logo),
-                                    'address'       => $this->getLang($row->id,$_GET['lid'])['address'],
+                                    'address'       => $this->getLang($row->id,0)['address'],
                                     'open'          => $open,
                                     'rating'        => $avg > 0 ? number_format($avg, 1) : '0.0',
                                     'delivery_time' => $row->delivery_time,
@@ -847,10 +833,10 @@ class User extends Authenticatable
                         }else {
                             $data[] = [
                                 'id'            => $row->id,
-                                'title'         => $this->getLang($row->id,$_GET['lid'])['name'],
+                                'title'         => $this->getLang($row->id,0)['name'],
                                 'img'           => Asset('upload/user/'.$row->img),
                                 'logo'           => Asset('upload/user/logo/'.$row->logo),
-                                'address'       => $this->getLang($row->id,$_GET['lid'])['address'],
+                                'address'       => $this->getLang($row->id,0)['address'],
                                 'open'          => $open,
                                 'rating'        => $avg > 0 ? number_format($avg, 1) : '0.0',
                                 'delivery_time' => $row->delivery_time,
@@ -869,10 +855,10 @@ class User extends Authenticatable
                             if ($type_filter == 0) { // Mas Recientes
                                 $data[] = [
                                     'id'            => $row->id,
-                                    'title'         => $this->getLang($row->id,$_GET['lid'])['name'],
+                                    'title'         => $this->getLang($row->id,0)['name'],
                                     'img'           => Asset('upload/user/'.$row->img),
                                     'logo'           => Asset('upload/user/logo/'.$row->logo),
-                                    'address'       => $this->getLang($row->id,$_GET['lid'])['address'],
+                                    'address'       => $this->getLang($row->id,0)['address'],
                                     'open'          => $open,
                                     'rating'        => $avg > 0 ? number_format($avg, 1) : '0.0',
                                     'delivery_time' => $row->delivery_time,
@@ -891,10 +877,10 @@ class User extends Authenticatable
                                 if ($offers->count() > 0) { // el comercio tiene ofertas
                                     $data[] = [
                                         'id'            => $row->id,
-                                        'title'         => $this->getLang($row->id,$_GET['lid'])['name'],
+                                        'title'         => $this->getLang($row->id,0)['name'],
                                         'img'           => Asset('upload/user/'.$row->img),
                                         'logo'           => Asset('upload/user/logo/'.$row->logo),
-                                        'address'       => $this->getLang($row->id,$_GET['lid'])['address'],
+                                        'address'       => $this->getLang($row->id,0)['address'],
                                         'open'          => $open,
                                         'rating'        => $avg > 0 ? number_format($avg, 1) : '0.0',
                                         'delivery_time' => $row->delivery_time,
@@ -913,10 +899,10 @@ class User extends Authenticatable
                                 if ($row->trending) {
                                     $data[] = [
                                         'id'            => $row->id,
-                                        'title'         => $this->getLang($row->id,$_GET['lid'])['name'],
+                                        'title'         => $this->getLang($row->id,0)['name'],
                                         'img'           => Asset('upload/user/'.$row->img),
                                         'logo'           => Asset('upload/user/logo/'.$row->logo),
-                                        'address'       => $this->getLang($row->id,$_GET['lid'])['address'],
+                                        'address'       => $this->getLang($row->id,0)['address'],
                                         'open'          => $open,
                                         'rating'        => $avg > 0 ? number_format($avg, 1) : '0.0',
                                         'delivery_time' => $row->delivery_time,
@@ -933,10 +919,10 @@ class User extends Authenticatable
                             }else {
                                 $data[] = [
                                     'id'            => $row->id,
-                                    'title'         => $this->getLang($row->id,$_GET['lid'])['name'],
+                                    'title'         => $this->getLang($row->id,0)['name'],
                                     'img'           => Asset('upload/user/'.$row->img),
                                     'logo'           => Asset('upload/user/logo/'.$row->logo),
-                                    'address'       => $this->getLang($row->id,$_GET['lid'])['address'],
+                                    'address'       => $this->getLang($row->id,0)['address'],
                                     'open'          => $open,
                                     'rating'        => $avg > 0 ? number_format($avg, 1) : '0.0',
                                     'delivery_time' => $row->delivery_time,
@@ -1029,8 +1015,6 @@ class User extends Authenticatable
                 'delivery_time' => $row->delivery_time,
                 'type'          => CategoryStore::find($row->type)->name,
                 'subtype'       => $row->subtype,
-                'delivery_charges_value' => $this->SetCommShip($row->id,$row->p_staff,$row->distance_max,$row->distance),
-                'max_distance'  => $this->GetMax_distance($row->id,$row->distance_max,$lat,$lon),
                 'favorite'      => $favorite
             ];
             
@@ -1216,9 +1200,9 @@ class User extends Authenticatable
 
                 $item[] = [
                     'id'            => $i->id,
-                    'name'          => $this->getLangItem($i->id,$_GET['lid'])['name'],
+                    'name'          => $this->getLangItem($i->id,0)['name'],
                     'img'           => $i->img ? Asset('upload/item/'.$i->img) : null,
-                    'description'   => $this->getLangItem($i->id,$_GET['lid'])['desc'],
+                    'description'   => $this->getLangItem($i->id,0)['desc'],
                     's_price'       => $IPrice,
                     'price'         => $price,
                     'last_price'    => $last_price,
@@ -1233,9 +1217,9 @@ class User extends Authenticatable
             $data[] = [
                 'id' => $cate->category_id,
                 'sort_no' => $this->getLangCate($cate->category_id,
-                $_GET['lid'])['sort_no'],
+                0)['sort_no'],
                 'cate_name' => $this->getLangCate($cate->category_id,
-                $_GET['lid'])['name'],
+                0)['name'],
                 'items' => $item
             ];
 
@@ -1274,9 +1258,9 @@ class User extends Authenticatable
 
             $data[] = [
                 'id'            => $i->id,
-                'name'          => $this->getLangItem($i->id,$_GET['lid'])['name'],
+                'name'          => $this->getLangItem($i->id,0)['name'],
                 'img'           => $i->img ? Asset('upload/item/'.$i->img) : null,
-                'description'   => $this->getLangItem($i->id,$_GET['lid'])['desc'],
+                'description'   => $this->getLangItem($i->id,0)['desc'],
                 's_price'       => $IPrice,
                 'price'         => $price,
                 'last_price'    => $last_price,
@@ -1356,12 +1340,12 @@ class User extends Authenticatable
             }
             
             $data[] = [
-                'cate_id'       => $this->getLangCate($cate->category_id,$_GET['lid'])['id'],
-                'cate_sort_no'  => $this->getLangCate($cate->category_id,$_GET['lid'])['sort_no'],
-                'cate_name'     => $this->getLangCate($cate->category_id,$_GET['lid'])['name'],
-                'required'      => $this->getLangCate($cate->category_id,$_GET['lid'])['required'],
-                'single_opcion' => $this->getLangCate($cate->category_id,$_GET['lid'])['single_opcion'],
-                'max_options'   => $this->getLangCate($cate->category_id,$_GET['lid'])['max_options'],
+                'cate_id'       => $this->getLangCate($cate->category_id,0)['id'],
+                'cate_sort_no'  => $this->getLangCate($cate->category_id,0)['sort_no'],
+                'cate_name'     => $this->getLangCate($cate->category_id,0)['name'],
+                'required'      => $this->getLangCate($cate->category_id,0)['required'],
+                'single_opcion' => $this->getLangCate($cate->category_id,0)['single_opcion'],
+                'max_options'   => $this->getLangCate($cate->category_id,0)['max_options'],
                 'items'         => $item
             ];
             

@@ -1,4 +1,4 @@
-@extends('user.layout.main')
+@extends('store.layout.main')
 
 @section('title') Administrar artículos @endsection
 
@@ -100,7 +100,7 @@
 </td>
 </tr>
 
-@include('user.item.addon')
+@include('store.item.addon')
 
 @endforeach
 

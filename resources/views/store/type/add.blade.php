@@ -1,4 +1,4 @@
-@extends('user.layout.main')
+@extends('store.layout.main')
 
 @section('title') Add New Item Type @endsection
 
@@ -15,7 +15,7 @@
 <div class="card-body">
 {!! Form::model($data, ['url' => [$form_url],'files' => true],['class' => 'col s12']) !!}
 
-@include('user.type.form')
+@include('store.type.form')
 
 </form>
 </div>
