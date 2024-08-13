@@ -62,17 +62,9 @@ class AdminController extends Controller {
 
 		return View($this->folder.'dashboard.home',[
 
-		'overview'	=> $admin->overview(),
-		'admin'		=> $admin,
-		'link' 		=> env('admin').'/order/',
-		'item'		=> new OrderItem,
-		'schart'	=> $admin->storeChart(),
-		'orders'	=> $order->getAll(),
-		'form_url'	=> env('admin').'/order/dispatched',
-        'boys'		=> Delivery::where('status',0)->where('store_id',0)->get(),
-		'arraydboy' => [],
-        'currency'  => Admin::find(1)->currency
-		]);
+		// 'overview'	=> $admin->overview(),
+		'admin'		=> $admin, 
+    	]);
 	}
 
 	/*

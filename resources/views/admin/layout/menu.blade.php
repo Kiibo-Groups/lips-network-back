@@ -16,7 +16,7 @@
 <div class="admin-sidebar-wrapper js-scrollbar">
 	<ul class="menu">
 		<!-- Dashboard -->
-		<li class="menu-item @if($page === 'home' || $page == 'setting' || $page == 'category' || $page == 'text' || $page == 'page') active opened @endif">
+		<li class="menu-item @if($page === 'home' || $page == 'setting') active opened @endif">
 			<a href="#" class="open-dropdown menu-link">
 				<span class="menu-icon">
 					<i class="icon-placeholder mdi mdi-shape-outline "></i>
@@ -24,13 +24,13 @@
 
 				<span class="menu-label">
 					<span class="menu-name">
-						Dashboard {{$page}}
+						Dashboard
 						<span class="menu-arrow"></span>
 					</span>
 				</span>
 			</a>
 			<!--submenu-->
-			<ul class="sub-menu" @if($page === 'home' || $page == 'setting' || $page == 'category' || $page == 'text' || $page == 'page') style="display: block;" @endif>
+			<ul class="sub-menu" @if($page === 'home' || $page == 'setting') style="display: block;" @endif>
 				@if($admin->hasPerm('Dashboard - Inicio'))
 				<li class="menu-item @if($page === 'home') active @endif">
 					<a href="{{ Asset(env('admin').'/home') }}" class=" menu-link">
@@ -56,33 +56,20 @@
 					</a>
 				</li>
 				@endif
-
-				@if($admin->hasPerm('Dashboard - Categorias'))
-				<li class="menu-item @if($page === 'category') active @endif">
-					<a href="{{ Asset(env('admin').'/category') }}" class=" menu-link">
-						<span class="menu-icon">
-							<i class="icon-placeholder  mdi mdi-message-settings-variant"></i>
-						</span>
-						<span class="menu-label">
-							<span class="menu-name">Categorias</span>
-						</span>
-					</a>
-				</li>
-				@endif
- 
-				@if($admin->hasPerm('Paginas de la aplicacion'))
-				<li class="menu-item @if($page === 'page') active @endif">
-					<a href="{{ Asset(env('admin').'/page/add') }}" class="menu-link">
-						<span class="menu-icon">
-							<i class="mdi mdi-file"></i>
-						</span>
-						<span class="menu-label"><span class="menu-name">Páginas de aplicaciones</span></span>
-					</a>
-				</li>
-				@endif
 			</ul>
 		</li>
 		<!-- Dashboard -->
+
+		@if($admin->hasPerm('Paginas de la aplicacion'))
+		<li class="menu-item @if($page === 'page') active @endif">
+			<a href="{{ Asset(env('admin').'/page/add') }}" class="menu-link">
+				<span class="menu-icon">
+					<i class="mdi mdi-file"></i>
+				</span>
+				<span class="menu-label"><span class="menu-name">Páginas de aplicaciones</span></span>
+			</a>
+		</li>
+		@endif
   
 		<!-- Banners -->
 		@if($admin->hasPerm('Banners'))
@@ -101,6 +88,21 @@
 		@endif
 	 	<!-- Banners -->
  
+		 @if($admin->hasPerm('Dashboard - Categorias'))
+		 <li class="menu-item @if($page === 'category') active @endif">
+			 <a href="{{ Asset(env('admin').'/category') }}" class=" menu-link">
+				 <span class="menu-icon">
+					 <i class="icon-placeholder  mdi mdi-message-settings-variant"></i>
+				 </span>
+				 <span class="menu-label">
+					 <span class="menu-name">Categorias</span>
+				 </span>
+			 </a>
+		 </li>
+		 @endif
+
+		
+
 		<!-- Negocios -->
 		@if($admin->hasPerm('Adminisrtar Restaurantes'))
 		<li class="menu-item @if($page === 'user') active @endif">
@@ -159,7 +161,7 @@
 					</a>
 				</li>
 
-				<li class="menu-item ">
+				{{-- <li class="menu-item ">
 					<a href="{{ Asset(env('admin').'/report_users') }}" class=" menu-link">
 						<span class="menu-icon">
 							<i class="icon-placeholder  mdi mdi-image"></i>
@@ -168,7 +170,7 @@
 							<span class="menu-name">Reportes</span>
 						</span>
 					</a>
-				</li>
+				</li> --}}
 			</ul>
 		</li>
 		@endif

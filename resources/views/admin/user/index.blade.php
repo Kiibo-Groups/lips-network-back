@@ -21,9 +21,7 @@
                                 <tr> 
                                     <th>Nombre</th> 
                                     <th>Status</th>
-                                    <th>Trending</th>
-                                    <th>Comentarios</th>
-                                    <th>Saldos</th>
+                                    <th>Trending</th>  
                                     <th style="text-align: right">Opciones</th>
                                 </tr> 
                             </thead>
@@ -48,11 +46,8 @@
                                         @else
                                         <button type="button" class="btn btn-sm m-b-15 ml-2 mr-2 btn-success" onclick="confirmAlert('{{ Asset($link.'status/'.$row->id.'?type=trend') }}')">Desactivar</button>
                                         @endif
-                                    </td>
-                                    <td width="5%">
-                                        <a href="{{ Asset($link.$row->id.'/rate') }}" class="btn m-b-15 ml-2 mr-2 btn-rounded-circle btn-md btn-success" data-toggle="tooltip" data-placement="top" data-original-title="Vista de comentarios"><i class="mdi mdi-chart-line"></i></a>
-                                    </td>
-                                    <td width="15%">
+                                    </td> 
+                                    {{-- <td width="15%">
                                         @if($row->saldo == 0)
                                             <!-- Saldo a favor -->
                                             <h5 style="color:blue;">{{$currency}}{{ number_format($row->saldo,2) }}</h5>
@@ -66,7 +61,7 @@
                                             ?>
                                             <h5 style="color:green;" data-toggle="tooltip" data-placement="top" data-original-title="Tiene un saldo deudor de:">{{$currency}}{{ number_format($sal,2) }} <i class="mdi mdi-trending-up"></i> </h5>
                                         @endif
-                                    </td>
+                                    </td> --}}
                                     <td width="20%" style="text-align: right">
                                         
                                         <button class="btn btn-primary dropdown-toggle" 
@@ -81,12 +76,12 @@
                                                     Abrir/Cerrar
                                                 </a>
                                             </li>
-                                            <!-- LoginUser -->
+                                            <!-- LoginUser 
                                             <li>
                                                 <a href="{{ Asset(env('admin').'/loginWithID/'.$row->id) }}" class="dropdown-item" target="_blank">
                                                     Ingresar como
                                                 </a>
-                                            </li>
+                                            </li>-->
                                              
                                             <!-- ViewInfo -->
                                             <li>
@@ -94,6 +89,7 @@
                                                     Ver Accesos
                                                 </a>
                                             </li>
+                                            
                                             <!-- Edit -->
                                             <li>
                                                 <a href="{{ Asset($link.$row->id.'/edit') }}" class="dropdown-item">

@@ -50,7 +50,7 @@ class CategoryStore extends Authenticatable
         if(isset($data['img']))
         {
             $filename   = time().rand(111,699).'.' .$data['img']->getClientOriginalExtension(); 
-            $data['img']->move("public/upload/categorys/", $filename);   
+            $data['img']->move("upload/categorys/", $filename);   
             $add->img = $filename;   
         }
 
@@ -70,7 +70,7 @@ class CategoryStore extends Authenticatable
 
     public function getAllCats()
     {
-        $res  = CategoryStore::orderBy('sort_no','ASC')->get();
+        $res  = CategoryStore::orderBy('created_at','DESC')->get();
         $data = [];
 
         foreach($res as $row)

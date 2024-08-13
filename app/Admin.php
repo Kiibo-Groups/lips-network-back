@@ -134,9 +134,9 @@ class Admin extends Authenticatable
 		return [
 
 		'store' 	=> User::where('status',0)->count(),
-		'order'		=> Order::count(),
-		'complete'  => Order::where('status',6)->count(),
-		'month'  	=> Order::whereDate('created_at','LIKE',date('Y-m').'%')->count(),
+		'order'		=> [],
+		'complete'  => 0,
+		'month'  	=> 0,
 		'user'  	=> AppUser::count(),
 
 		];

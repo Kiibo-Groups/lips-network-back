@@ -3,8 +3,8 @@
 
 @section('content')
 <div class="container pull-up">
+    @include('admin.dashboard.overview')
     @include('admin.dashboard.chart')
-    @include('admin.dashboard.order')
 </div>
 @endsection
 
@@ -40,11 +40,11 @@
                 },
                 series: [{
                     name: 'Pedidos Cancelados',
-                    data: [<?php echo $admin->chart(6)['cancel']; ?>, <?php echo $admin->chart(5)['cancel']; ?>, <?php echo $admin->chart(4)['cancel']; ?>, <?php echo $admin->chart(3)['cancel']; ?>, <?php echo $admin->chart(2)['cancel']; ?>, <?php echo $admin->chart(1)['cancel']; ?>, <?php echo $admin->chart(0)['cancel']; ?>]
+                    data: [5, 7, 9, 10, 4, 2, 1]
                 },
                 {
                     name: 'Pedidos Completos',
-                    data: [<?php echo $admin->chart(6)['order']; ?>, <?php echo $admin->chart(5)['order']; ?>, <?php echo $admin->chart(4)['order']; ?>, <?php echo $admin->chart(3)['order']; ?>, <?php echo $admin->chart(2)['order']; ?>, <?php echo $admin->chart(1)['order']; ?>, <?php echo $admin->chart(0)['order']; ?>]
+                    data: [10, 7, 8, 10, 8, 4, 6]
                 }, 
                 
 
@@ -96,10 +96,10 @@
                     enabled: false
                 },
                 series: [{
-                    data: ['<?php echo $admin->getStoreData($schart,0,'order'); ?>','<?php echo $admin->getStoreData($schart,1,'order'); ?>','<?php echo $admin->getStoreData($schart,2,'order'); ?>','<?php echo $admin->getStoreData($schart,3,'order'); ?>','<?php echo $admin->getStoreData($schart,4,'order'); ?>','<?php echo $admin->getStoreData($schart,5,'order'); ?>','<?php echo $admin->getStoreData($schart,6,'order'); ?>','<?php echo $admin->getStoreData($schart,7,'order'); ?>','<?php echo $admin->getStoreData($schart,8,'order'); ?>','<?php echo $admin->getStoreData($schart,9,'order'); ?>']
+                    data: [3,4,6]
                 }],
                 xaxis: {
-                    categories: ['<?php echo $admin->getStoreData($schart,0,'name'); ?>','<?php echo $admin->getStoreData($schart,1,'name'); ?>','<?php echo $admin->getStoreData($schart,2,'name'); ?>','<?php echo $admin->getStoreData($schart,3,'name'); ?>','<?php echo $admin->getStoreData($schart,4,'name'); ?>','<?php echo $admin->getStoreData($schart,5,'name'); ?>','<?php echo $admin->getStoreData($schart,6,'name'); ?>','<?php echo $admin->getStoreData($schart,7,'name'); ?>','<?php echo $admin->getStoreData($schart,8,'name'); ?>','<?php echo $admin->getStoreData($schart,9,'name'); ?>'],
+                    categories: ['Amazon','Oxxo','Demo'],
                 },
                 yaxis: {},
                 tooltip: {}

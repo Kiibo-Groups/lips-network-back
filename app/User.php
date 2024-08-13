@@ -103,19 +103,19 @@ class User extends Authenticatable
         if(isset($data['img']))
         {
             $filename   = time().rand(111,699).'.' .$data['img']->getClientOriginalExtension(); 
-            $data['img']->move("public/upload/user/", $filename);   
+            $data['img']->move("upload/user/", $filename);   
             $add->img = $filename;   
         }
         if(isset($data['logo']))
         {
             $filename   = time().rand(111,699).'.' .$data['logo']->getClientOriginalExtension(); 
-            $data['logo']->move("public/upload/user/logo/", $filename);   
+            $data['logo']->move("upload/user/logo/", $filename);   
             $add->logo = $filename;
         }
 
         if (isset($data['img_discount'])) {
             $filename   = time().rand(111,699).'.' .$data['img_discount']->getClientOriginalExtension(); 
-            $data['img_discount']->move("public/upload/user_discount/", $filename);   
+            $data['img_discount']->move("upload/user_discount/", $filename);   
             $add->img_discount = $filename;   
         }
 
@@ -343,8 +343,6 @@ class User extends Authenticatable
 
         foreach($res as $row)
         {
-            $admin = Admin::find(1);
-
             /****** Function IsClose or IsOpen ******************/
                 $op_time 	 = new Opening_times;
 
@@ -364,18 +362,7 @@ class User extends Authenticatable
                 }
             /****** Favorites ******/
 
-            $totalRate    = Rate::where('store_id',$row->id)->count();
-            $totalRateSum = Rate::where('store_id',$row->id)->sum('star');
             
-            if($totalRate > 0)
-            {
-                $avg          = $totalRateSum / $totalRate;
-            }
-            else
-            {
-                $avg           = 0 ;
-            }
-
             $data[] = [
                 'id'            => $row->id,
                 'title'         => $this->getLang($row->id,0)['name'],
@@ -384,18 +371,11 @@ class User extends Authenticatable
                 'address'       => $this->getLang($row->id,0)['address'],
                 'open'          => $open,
                 'trending'      => $row->trending,
-                'phone'         => $row->phone,
-                'rating'        => $avg > 0 ? number_format($avg, 1) : '0.0',
-                'images'        => $this->userImages($row->id),
-                'ratings'       => $this->getRating($row->id),
+                'phone'         => $row->phone,  
                 'person_cost'   => $row->person_cost,
                 'delivery_time' => $row->delivery_time,
                 'type'          => CategoryStore::find($row->type)->name,
                 'subtype'       => $row->subtype,
-                'currency'      => $currency,
-                'items'         => $this->menuItem($row->id,$row->c_type,$row->c_value),
-                'items_trend'   => $this->menuTrend($row->id),
-                'delivery_charges_value' => $this->SetCommShip($row->id,$row->p_staff,$row->distance_max,$row->distance),
                 'favorite'      => $favorite
             ];
             
@@ -404,36 +384,23 @@ class User extends Authenticatable
         return $data;
     }
 
-    function SearchCat($city_id)
+    function SearchCat($cat)
     {
-        $currency   = Admin::find(1)->currency;
-        $lat        = isset($_GET['lat']) ? $_GET['lat'] : 0;
-        $lon        = isset($_GET['lng']) ? $_GET['lng'] : 0;
         $user_id    = isset($_GET['user_id']) ? $_GET['user_id'] : 0;
 
-        $res  = User::where(function($query) use($city_id){
-
-            $query->where('status',0)->where('city_id',$city_id);
-
-            if (isset($_GET['cat'])) {
-                $query->where('type',$_GET['cat']);
-            }
+        $res  = User::where(function($query) use($cat){
+           
+            $query->where('type',$cat);
             
-        })->select('users.*',DB::raw("6371 * acos(cos(radians(" . $lat . ")) 
-        * cos(radians(users.lat)) 
-        * cos(radians(users.lng) - radians(" . $lon . ")) 
-        + sin(radians(" .$lat. ")) 
-        * sin(radians(users.lat))) AS distance"))
-        ->orderBy('id','DESC')->get();
+        })->orderBy('id','DESC')->get();
         
+
         $data = [];
         $open_store = [];
         $close_store = [];
 
         foreach($res as $row)
         {
-            $admin = Admin::find(1);
-
             /****** Function IsClose or IsOpen ******************/
             $op_time 	 = new Opening_times;
 
@@ -442,21 +409,8 @@ class User extends Authenticatable
             }else {
                 $open = false;
             }
-            $time        = $op_time->ViewTime($row->id)['Time'];
-            $opening_day = $op_time->ViewTime($row->id)['w_close'];
             /****** Function IsClose or IsOpen ******************/
-            $totalRate    = Rate::where('store_id',$row->id)->count();
-            $totalRateSum = Rate::where('store_id',$row->id)->sum('star');
             
-            if($totalRate > 0)
-            {
-                $avg          = $totalRateSum / $totalRate;
-            }
-            else
-            {
-                $avg           = 0 ;
-            }
-
             /****** Favorites ******/
                 $chk_favs = Favorites::where('store_id',$row->id)->where('user_id',$user_id)->first();
                 if ($chk_favs) {
@@ -466,59 +420,23 @@ class User extends Authenticatable
                 }
             /****** Favorites ******/
            
-            if ($open == true) {
-                $open_store[] = [
-                    'id'            => $row->id,
-                    'title'         => $this->getLang($row->id,0)['name'],
-                    'img'           => Asset('upload/user/'.$row->img),
-                    'logo'           => Asset('upload/user/logo/'.$row->logo),
-                    'address'       => $this->getLang($row->id,0)['address'],
-                    'open'          => $open,
-                    'rating'        => $avg > 0 ? number_format($avg, 1) : '0.0',
-                    'person_cost'   => $row->person_cost,
-                    'delivery_time' => $row->delivery_time,
-                    'type'          => CategoryStore::find($row->type)->name,
-                    'subtype'       => $row->subtype,
-                    'delivery_charges_value' => $this->SetCommShip($row->id,$row->p_staff,$row->distance_max,$row->distance),
-                    'max_distance'  => $this->GetMax_distance($row->id,$row->distance_max,$lat,$lon),
-                    "distance_max"  => $row->distance_max,
-                    'km'            => round($row->distance,2),
-                    'favorite'      => $favorite
-                ];
-            }else {
-                $close_store[] = [
-                    'id'            => $row->id,
-                    'title'         => $this->getLang($row->id,0)['name'],
-                    'img'           => Asset('upload/user/'.$row->img),
-                    'logo'           => Asset('upload/user/logo/'.$row->logo),
-                    'address'       => $this->getLang($row->id,0)['address'],
-                    'open'          => $open,
-                    'rating'        => $avg > 0 ? number_format($avg, 1) : '0.0',
-                    'person_cost'   => $row->person_cost,
-                    'delivery_time' => $row->delivery_time,
-                    'type'          => CategoryStore::find($row->type)->name,
-                    'subtype'       => $row->subtype,
-                    'delivery_charges_value' => $this->SetCommShip($row->id,$row->p_staff,$row->distance_max,$row->distance),
-                    'max_distance'  => $this->GetMax_distance($row->id,$row->distance_max,$lat,$lon),
-                    "distance_max"  => $row->distance_max,
-                    'km'            => round($row->distance,2),
-                    'favorite'      => $favorite
-                ];
-            }
+            $data[] = [
+                'id'            => $row->id,
+                'title'         => $this->getLang($row->id,0)['name'],
+                'img'           => Asset('upload/user/'.$row->img),
+                'logo'           => Asset('upload/user/logo/'.$row->logo),
+                'address'       => $this->getLang($row->id,0)['address'],
+                'open'          => $open,
+                'person_cost'   => $row->person_cost,
+                'delivery_time' => $row->delivery_time,
+                'type'          => CategoryStore::find($row->type)->name,
+                'subtype'       => $row->subtype,
+                'delivery_charges_value' => $this->SetCommShip($row->id,$row->p_staff,$row->distance_max,$row->distance),
+                'favorite'      => $favorite
+            ];
         }
 
-        
-        if (count($close_store) > 0) {
-            foreach ($close_store as $row) {
-                $data = $close_store;
-            }
-        }
-
-        if (count($open_store) > 0) {
-            foreach ($open_store as $row) {
-                array_unshift($data,$row);
-            }
-        }
+         
         
 
         return $data;
@@ -981,20 +899,7 @@ class User extends Authenticatable
                     $open = false;
                 }
             /****** Verificacion de abierto/Cerrado ******************/
-
-            /****** Ratings ********/
-                $totalRate    = Rate::where('store_id',$row->id)->count();
-                $totalRateSum = Rate::where('store_id',$row->id)->sum('star');
-                
-                if($totalRate > 0)
-                {
-                    $avg          = $totalRateSum / $totalRate;
-                }
-                else
-                {
-                    $avg           = 0 ;
-                }
-            /****** Ratings ********/
+ 
            
             /****** Favorites ******/
                 $chk_favs = Favorites::where('store_id',$row->id)->where('user_id',$user_id)->first();
@@ -1011,7 +916,6 @@ class User extends Authenticatable
                 'img'           => Asset('upload/user/'.$row->img),
                 'logo'           => Asset('upload/user/logo/'.$row->logo),
                 'open'          => $open,
-                'rating'        => $avg > 0 ? number_format($avg, 1) : '0.0',
                 'delivery_time' => $row->delivery_time,
                 'type'          => CategoryStore::find($row->type)->name,
                 'subtype'       => $row->subtype,

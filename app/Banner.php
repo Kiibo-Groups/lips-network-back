@@ -26,7 +26,7 @@ class Banner extends Authenticatable
         if(isset($data['img']))
         {
             $filename   = time().rand(111,699).'.' .$data['img']->getClientOriginalExtension(); 
-            $data['img']->move("public/upload/banner/", $filename);   
+            $data['img']->move("upload/banner/", $filename);   
             $add->img = $filename;   
         }
 
@@ -41,24 +41,15 @@ class Banner extends Authenticatable
     |Get all data from db
     |--------------------------------------
     */
-    public function getAll($city = 0,$type = 'all')
+    public function getAll($type = 'all')
     {
-        return Banner::where(function($query) use($city,$type){
+        return Banner::where(function($query) use($type){
 
             if($type !== 'all')
             {
                 $query->where('banner.position',$type);
             }
-
-            if($city > 0)
-            {
-                $query->where('banner.status',0)->whereIn('banner.city_id',[0,$city]);
-            }
-
-
-        })->leftjoin('city','banner.city_id','=','city.id')
-                     ->select('city.name as city','banner.*')
-                     ->orderBy('id','DESC')->get();
+        })->orderBy('id','DESC')->get();
     }
 
     public function getPosition($type)
@@ -81,19 +72,22 @@ class Banner extends Authenticatable
 
     public function getAppData($id,$type)
     {
+        $req = Banner::where(function($query) use($type){
+
+            if($type !== 'all')
+            {
+                $query->where('banner.position',$type);
+            }
+        })->orderBy('id','DESC')->get();
+
         $data = [];
 
-        foreach($this->getAll($id,$type) as $row)
-        {
-            $link   = BannerStore::where('banner_id',$row->id)->pluck('store_id')->toArray();
+        foreach($req as $row)
+        { 
             $data[] = [
-
-            'id'        => $row->id,
-            'img'       => Asset('upload/banner/'.$row->img),
-            'type'      => $row->design_type,
-            'position'  => $row->position,
-            'link'      => count($link) > 0 ? true : false
-
+                'id'        => $row->id,
+                'img'       => Asset('upload/banner/'.$row->img),
+                'type'      => $row->design_type
             ];
         }
 

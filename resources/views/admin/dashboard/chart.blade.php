@@ -2,7 +2,7 @@
     <div class="col-lg-6  m-b-30">
         <div class="card">
             <div class="card-header">
-                <div class="card-title">Informe de pedidos de los últimos 6 meses</div>
+                <div class="card-title">Informe de Tickets de los últimos 6 meses</div>
 
                 <div class="card-controls">
                     <a href="#" class="js-card-refresh icon"> </a>

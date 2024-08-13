@@ -27,34 +27,12 @@ class BannerController extends Controller {
         $city = Auth::guard('admin')->user()->city_id;
 
 		if ($admin->hasperm('Banners')) {
-			if(Auth::guard('admin')->user()->city_id == 0){
-
 			$res = new Banner;
 
-			return View($this->folder.'index',['data' => $res->getAll(),'link' => env('admin').'/banner/']);
-			} else {
-
-                $city2 = 0;
-                $type = 'all';
-
-                $res = Banner::where(function($query) use($city2,$type){
-
-                    if($type !== 'all')
-                    {
-                        $query->where('banner.position',$type);
-                    }
-
-                    if($city2 > 0)
-                    {
-                        $query->where('banner.status',0)->whereIn('banner.city_id',[0,$city2]);
-                    }
-
-
-                })->leftjoin('city','banner.city_id','=','city.id')
-                    ->select('city.name as city','banner.*')->where('city_id', "$city")->get();
-
-                return View($this->folder.'index',['data' => $res,'link' => env('admin').'/banner/']);
-			}
+			return View($this->folder.'index',[
+				'data' => $res->getAll(),
+				'link' => env('admin').'/banner/']
+			);
 
 		}else {
 			return Redirect::to(env('admin').'/home')->with('error', 'No tienes permiso de ver la sección Banners');
@@ -111,16 +89,13 @@ class BannerController extends Controller {
 		$admin = new Admin;
 
 		if ($admin->hasperm('Banners')) {
-			$city = new City;
 			$user = new User;
 
 			return View($this->folder.'edit',[
 
 				'data' 		=> Banner::find($id),
-				'form_url' 	=> env('admin').'/banner/'.$id,
-				'citys' 	=> $city->getAll(0),
+				'form_url' 	=> env('admin').'/banner/'.$id, 
 				'users'		=> $user->getAll(0),
-				'array'		=> BannerStore::where('banner_id',$id)->pluck('store_id')->toArray()
 
 			]);
 		}else {
@@ -153,7 +128,7 @@ class BannerController extends Controller {
 
 		BannerStore::where('banner_id',$id)->delete();
 
-		unlink("upload/banner/".$res->img);
+		@unlink("upload/banner/".$res->img);
 
 		$res->delete();
 

@@ -23,7 +23,7 @@ Route::get('homepage','ApiController@homepage');
 Route::get('getStore/{id}','ApiController@getStore');
 Route::get('getTypeDelivery/{id}','ApiController@getTypeDelivery');
 Route::get('search/{query}/{type}/{city}','ApiController@search');
-Route::get('SearchCat/{city}','ApiController@SearchCat');
+Route::get('SearchCat/{cat}','ApiController@SearchCat');
 Route::get('SearchFilters/{city}','ApiController@SearchFilters');
 Route::get('ViewAllCats','ApiController@ViewAllCats');
 Route::post('addToCart','ApiController@addToCart');
@@ -37,7 +37,7 @@ Route::post('signupOP','ApiController@signupOP');
 Route::post('sendOTP','ApiController@sendOTP');
 Route::post('chkUser','ApiController@chkUser');
 Route::post('SignPhone','ApiController@SignPhone');
-Route::post('login','ApiController@login');
+Route::post('login','ApiController@login'); 
 Route::post('Newlogin','ApiController@Newlogin');
 Route::post('loginfb','ApiController@loginfb');
 Route::post('forgot','ApiController@forgot');
@@ -69,7 +69,7 @@ Route::get('GetInfiniteScroll/{id}','ApiController@GetInfiniteScroll');
 Route::post('deleteOrders','ApiController@deleteOrders');
 Route::get('getStoreOpen/{city}','ApiController@getStoreOpen');
 Route::get('deleteAll/{id}','ApiController@deleteAll');
-
+ 
 Route::post('getClient','ApiController@getClient');
 Route::post('SetCardClient','ApiController@SetCardClient');
 Route::post('GetCards','ApiController@GetCards');

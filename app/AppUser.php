@@ -3,6 +3,7 @@
 namespace App;
  
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Validator;
 use Mail;
@@ -22,9 +23,10 @@ class AppUser extends Authenticatable
             $add->name          = $data['name'];
             $add->email         = $data['email'];
             $add->phone         = isset($data['phone']) ? $data['phone'] : 'null';
-            $add->password      = $data['password'];
-            $add->pswfacebook   = isset($data['pswfb']) ? $data['pswfb'] : 0;
+            $add->password      = Hash::make($data['password']);
+            $add->shw_password  = $data['password']; 
             $add->refered       = isset($data['refered']) ? $data['refered'] : '';
+            $add->status        = 1; // Activo
             $add->save();
 
             return ['msg' => 'done','user_id' => $add->id];
@@ -49,7 +51,7 @@ class AppUser extends Authenticatable
             // Intentamos con el id
             $res = AppUser::find($data['user_id']);
             if (isset($res->id)) {
-                return ['msg' => 'user_exist', 'user_id' => $res->id, 'data' => $res];
+                return ['msg' => 'user_exist', 'user_id' => $res->id, 'data' => collect($res)->except(['shw_password','password','created_at','updated_at','otp'])];
             }else {
                 return ['msg' => 'not_exist'];
             }
@@ -79,15 +81,37 @@ class AppUser extends Authenticatable
 
    public function login($data)
    {
-     $chk = AppUser::where('email',$data['email'])->where('password',$data['password'])->first();
+     $chk = AppUser::where('email',$data['email'])->first();
 
      if(isset($chk->id))
      {
-        return ['msg' => 'done','user_id' => $chk->id];
+        // Generamos el OTP de acceso
+        $otp = rand(1111,9999);
+        // Guardamos
+        $chk->otp = $otp;
+        $chk->save();
+        // // Enviamos por Email
+        // $para       =   $data['email'];
+        // $asunto     =   'Tu codigo de acceso - Lips Network';
+        // $mensaje    =   "Hola ".$chk->name." Un gusto saludarte, se ha solicitado un codigo de recuperacion para acceder a tu cuenta de Lips Network";
+        // $mensaje    .=  ' '.'<br>';
+        // $mensaje    .=  "Tu codigo es: <br />";
+        // $mensaje    .=  '# '.$otp;
+        // $mensaje    .=  "<br /><hr />Recuerda, si no lo has solicitado tu has caso omiso a este mensaje y recomendamos hacer un cambio en tu contrasena.";
+        // $mensaje    .=  "<br/ ><br /><br /> Te saluda el equipo de Lips Network";
+    
+        // $cabeceras = 'From: lipsnetwork@gmail.com' . "\r\n";
+        
+        // $cabeceras .= 'MIME-Version: 1.0' . "\r\n";
+        
+        // $cabeceras .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
+        // mail($para, $asunto, utf8_encode($mensaje), $cabeceras);
+
+        return ['msg' => 'done','user_id' => $chk->id ,'otp' => $otp];
      }
      else
      {
-        return ['msg' => 'Opps! Detalles de acceso incorrectos'];
+        return ['msg' => 'Opps! El Email proporcionado no existe. Por favor valida tú información'];
      }
    }
 
@@ -146,11 +170,11 @@ class AppUser extends Authenticatable
 
         $add->save();
 
-        return ['msg' => 'done','user_id' => $add->id,'data' => $add];
+        return ['data' => 'done','user_id' => $add->id, 'req' => $add];
      }
      else
      {
-        return ['msg' => 'Opps! Este correo electrónico ya existe.'];
+        return ['data' => 'Opps! Este correo electrónico ya existe.'];
      }
    }
 
@@ -166,13 +190,13 @@ class AppUser extends Authenticatable
             $res->save();
 
             $para       =   $data['email'];
-            $asunto     =   'Codigo de acceso - Babel Market';
-            $mensaje    =   "Hola ".$res->name." Un gusto saludarte, se ha pedido un codigo de recuperacion para acceder a tu cuenta en Babel Market";
+            $asunto     =   'Codigo de acceso - Lips Network';
+            $mensaje    =   "Hola ".$res->name." Un gusto saludarte, se ha pedido un codigo de recuperacion para acceder a tu cuenta en Lips Network";
             $mensaje    .=  ' '.'<br>';
             $mensaje    .=  "Tu codigo es: <br />";
             $mensaje    .=  '# '.$otp;
             $mensaje    .=  "<br /><hr />Recuerda, si no lo has solicitado tu has caso omiso a este mensaje y te recomendamos hacer un cambio en tu contrasena.";
-            $mensaje    .=  "<br/ ><br /><br /> Te saluda el equipo de Babel Market";
+            $mensaje    .=  "<br/ ><br /><br /> Te saluda el equipo de Lips Network";
         
             $cabeceras = 'From: babelmarketapis@gmail.com' . "\r\n";
             
@@ -197,11 +221,11 @@ class AppUser extends Authenticatable
 
         if(isset($res->id))
         {
-            $return = ['msg' => 'done','user_id' => $res->id];
+            $return = ['msg' => 'done','user_id' => $res->id , 'user_dat' => $res];
         }
         else
         {
-            $return = ['msg' => 'error','error' => '¡Lo siento! OTP no coincide.'];
+            $return = ['msg' => 'error','error' => '¡Lo siento! El Código OTP no coincide.'];
         }
 
         return $return;
@@ -278,4 +302,6 @@ class AppUser extends Authenticatable
 
        return $allData;
     }
+
+     
 }

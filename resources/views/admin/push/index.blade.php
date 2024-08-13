@@ -12,33 +12,21 @@
                 <div class="card py-3 m-b-30">
                     <div class="card-body">
                         {!! Form::open(['url' => [$form_url],'files' => true],['class' => 'col s12']) !!}
+                            
                             <div class="form-row">
-                                <div class="form-group col-md-12">
+                                <div class="form-group col-md-6">
                                     <label for="inputEmail6">Titulo</label>
                                     {!! Form::text('title',null,['id' => 'code','class' => 'form-control','required' => 'required'])!!}
                                 </div>
-                            </div>
 
-                            <div class="form-row">
                                 <div class="form-group col-md-6">
                                     <label for="destin_notify">Destino de notificaciones</label>
                                     <select name="destin_notify" class="form-control" id="destin_notify">
                                         <option value="all">Todas</option>
                                         <option value="0">Usuarios</option>
                                         <option value="1">Negocios</option>
-                                        <option value="2">Repartidores</option>
                                     </select>
-                                </div>
-
-                                <div class="form-group col-md-6">
-                                    <label for="inputEmail6">Selección de Ciudades</label>
-                                    <select name="citys[]" class="form-control js-select2" multiple="true">
-                                        <option value="all">Todas</option>
-                                        @foreach($citys as $p)
-                                        <option value="{{ $p->id }}" @if(in_array($p->name,$array)) selected @endif>{{ $p->name }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
+                                </div>                                 
                             </div>
 
                             <div class="form-row">
@@ -55,7 +43,7 @@
                                 </div>
                             </div>
 
-                            <button type="submit" class="btn btn-success btn-cta">Send</button>
+                            <button type="submit" class="btn btn-success btn-cta">Enviar Notificación</button>
                         </form>
                     </div>
                 </div>

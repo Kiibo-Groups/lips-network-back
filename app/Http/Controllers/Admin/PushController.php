@@ -3,10 +3,9 @@
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Auth;
-use App\City;
+use Auth; 
 use App\Admin;
-use App\AppUser;
+
 use DB;
 use Validator;
 use Redirect;
@@ -21,13 +20,11 @@ class PushController extends Controller {
 	|---------------------------------------
 	*/
 	public function index()
-	{	
-		$citys = new City;
+	{	 
 		$admin = new Admin;	
 		if ($admin->hasperm('Notificaciones push')) {		
 		return View($this->folder.'index',[
 			'form_url' => Asset(env('admin').'/push'),
-			'citys'	   => $citys->getAll(0),
 			'array'    => []
 			]);
 		} else {
@@ -37,8 +34,6 @@ class PushController extends Controller {
 
 	public function send(Request $Request)
 	{
-		$citys = $Request->get('citys');
-
 		$img = null;
 		if($Request->has('img'))
 		{
@@ -51,46 +46,12 @@ class PushController extends Controller {
 		$destin_notify = $Request->get('destin_notify');
 
 		if($destin_notify == 0) { // Usuarios
-
-			if(in_array('all',$citys)){
-				$this->sendPush($Request->get('title'),$Request->get('desc'),0,$img);
-			} else {
-				foreach($citys as $city) {
-					$user = AppUser::where('last_city', $city)->get();
-	
-					foreach($user as $us) {
-						$this->sendPush($Request->get('title'),$Request->get('desc'),$us->id,$img);
-						echo $us->id.' - '.$us->name.'<br />';
-					}
-				}
-			}
-
+			$this->sendPush($Request->get('title'),$Request->get('desc'),0,$img);
 		}else if($destin_notify == 1) {// Negocios
-			if(in_array('all',$citys)){
-				$this->sendPushS($Request->get('title'),$Request->get('desc'),0,$img);
-			} else {
-				foreach($citys as $city) {
-					$user = User::where('city_id', $city)->get();
-	
-					foreach($user as $us) {
-						$this->sendPushS($Request->get('title'),$Request->get('desc'),$us->id,$img);
-					}
-				}
-			}
+			$this->sendPushS($Request->get('title'),$Request->get('desc'),0,$img);
 		}else { // Usuarios por defecto
 			
-			if(in_array('all',$citys)){
-				$this->sendPush($Request->get('title'),$Request->get('desc'),0,$img);
-			} else {
-				foreach($citys as $city) {
-					$user = AppUser::where('last_city', $city)->get();
-	
-					foreach($user as $us) {
-						$this->sendPush($Request->get('title'),$Request->get('desc'),$us->id,$img);
-						echo $us->id.' - '.$us->name.'<br />';
-					}
-				}
-			}
+			$this->sendPush($Request->get('title'),$Request->get('desc'),0,$img);
 		}
 
 		
