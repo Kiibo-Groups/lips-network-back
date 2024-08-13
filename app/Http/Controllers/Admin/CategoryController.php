@@ -122,7 +122,7 @@ class CategoryController extends Controller {
 			return redirect(env('admin').'/category')->with('error','Esta categoria esta asignada a uno o varios comercios.');	
 		}else {
 			CategoryStore::where('id',$id)->delete();
-			@unlink("upload/categorys/".$res->img);
+			@unlink("public/upload/categorys/".$assign->img);
 			return redirect(env('admin').'/category')->with('message','Categoria Eliminada con exito.');
 		}
 	}

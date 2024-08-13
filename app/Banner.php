@@ -26,7 +26,7 @@ class Banner extends Authenticatable
         if(isset($data['img']))
         {
             $filename   = time().rand(111,699).'.' .$data['img']->getClientOriginalExtension(); 
-            $data['img']->move("upload/banner/", $filename);   
+            $data['img']->move("public/upload/banner/", $filename);   
             $add->img = $filename;   
         }
 
@@ -86,7 +86,7 @@ class Banner extends Authenticatable
         { 
             $data[] = [
                 'id'        => $row->id,
-                'img'       => Asset('upload/banner/'.$row->img),
+                'img'       => Asset('public/upload/banner/'.$row->img),
                 'type'      => $row->design_type
             ];
         }
