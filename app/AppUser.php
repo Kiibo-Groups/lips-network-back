@@ -91,21 +91,21 @@ class AppUser extends Authenticatable
         $chk->otp = $otp;
         $chk->save();
         // // Enviamos por Email
-        // $para       =   $data['email'];
-        // $asunto     =   'Tu codigo de acceso - Lips Network';
-        // $mensaje    =   "Hola ".$chk->name." Un gusto saludarte, se ha solicitado un codigo de recuperacion para acceder a tu cuenta de Lips Network";
-        // $mensaje    .=  ' '.'<br>';
-        // $mensaje    .=  "Tu codigo es: <br />";
-        // $mensaje    .=  '# '.$otp;
-        // $mensaje    .=  "<br /><hr />Recuerda, si no lo has solicitado tu has caso omiso a este mensaje y recomendamos hacer un cambio en tu contrasena.";
-        // $mensaje    .=  "<br/ ><br /><br /> Te saluda el equipo de Lips Network";
+        $para       =   $data['email'];
+        $asunto     =   'Tu codigo de acceso - Lips Network';
+        $mensaje    =   "Hola ".$chk->name." Un gusto saludarte, se ha solicitado un codigo de recuperacion para acceder a tu cuenta de Lips Network";
+        $mensaje    .=  ' '.'<br>';
+        $mensaje    .=  "Tu codigo es: <br />";
+        $mensaje    .=  '# '.$otp;
+        $mensaje    .=  "<br /><hr />Recuerda, si no lo has solicitado tu has caso omiso a este mensaje y recomendamos hacer un cambio en tu contrasena.";
+        $mensaje    .=  "<br/ ><br /><br /> Te saluda el equipo de Lips Network";
     
-        // $cabeceras = 'From: lipsnetwork@gmail.com' . "\r\n";
+        $cabeceras = 'From: lipsnetwork@gmail.com' . "\r\n";
         
-        // $cabeceras .= 'MIME-Version: 1.0' . "\r\n";
+        $cabeceras .= 'MIME-Version: 1.0' . "\r\n";
         
-        // $cabeceras .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
-        // mail($para, $asunto, utf8_encode($mensaje), $cabeceras);
+        $cabeceras .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
+        mail($para, $asunto, utf8_encode($mensaje), $cabeceras);
 
         return ['msg' => 'done','user_id' => $chk->id ,'otp' => $otp];
      }
