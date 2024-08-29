@@ -5,6 +5,7 @@ use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Auth;
 use App\Models\User;
 use App\Models\AppUser;
@@ -12,12 +13,8 @@ use App\Models\Banner;
 use App\Models\Admin;
 use App\Models\CategoryStore;
 use App\Models\Favorites;
-use DB;
-use Validator;
-use Redirect;
-use Excel;
-use Stripe;
-
+use App\Models\Tickets;
+use DB;  
 class ApiController extends Controller
 {
 
@@ -232,8 +229,8 @@ class ApiController extends Controller
 			$tickets   = Tickets::create($data);
 
 			return response()->json(['code' => 200, 'data' => $tickets, 'message' => 'Se ha creado el Tickets.']);
-		} catch (\Throwable $th) {
-			return response()->json(['data' => $th]);
+		} catch (\Exception $th) {
+			return response()->json(['data' => $th->getMessage()]);
 		}
 	}
 }
