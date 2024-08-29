@@ -205,9 +205,9 @@ class ApiController extends Controller
 			$userId	= $input['id_cliente'];
 			
 			
-			$target_path = "public/assets/tickets/";
-			if (!file_exists("public/assets/tickets/")) {
-				mkdir("public/assets/tickets/", 0777, true);
+			$target_path = "public/upload/tickets/";
+			if (!file_exists("public/upload/tickets/")) {
+				mkdir("public/upload/tickets/", 0777, true);
 			}
 
 			$base64Image = $imagen; // 
@@ -219,7 +219,7 @@ class ApiController extends Controller
 			// Decodificar los datos binarios de base64
 			$filename   = time() . rand(1119, 6999) . '.png';
 			$imageData = base64_decode($data);
-			$rutaImagenJPG = "public/assets/tickets/" . $filename;
+			$rutaImagenJPG = "public/upload/tickets/" . $filename;
 
 			file_put_contents($rutaImagenJPG, $imageData);
 
