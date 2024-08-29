@@ -9,7 +9,7 @@ use App\User;
 use App\City;
 use App\UserImage;
 use App\Order;
-use App\Admin;
+use App\Models\Admin;
 use App\CategoryStore;
 use App\Opening_times;
 use DB;

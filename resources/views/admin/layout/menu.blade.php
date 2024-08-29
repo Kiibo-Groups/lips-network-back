@@ -1,4 +1,4 @@
-@inject('admin', 'App\Admin')
+@inject('admin', 'App\Models\Admin')
 @php($page = Request::segment(2))
  
 

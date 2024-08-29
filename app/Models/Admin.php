@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -156,74 +156,8 @@ class Admin extends Authenticatable
 		return $type == 0 ? date('l') : date('l',strtotime(date('Y').'- '.$type.' day'));
 	}
 
-	public function chart($type,$sid = 0)
-	{
-		$month      = date('Y-m',strtotime(date('Y-m').' - '.$type.' month'));
-		
-		$order   = Order::where(function($query) use($sid){
-
-			if($sid > 0)
-			{
-				$query->where('store_id',Auth::user()->id);
-			}
-
-		})->where('status',6)->whereDate('created_at','LIKE',$month.'%')->count();
-
-
-		$cancel  = Order::where(function($query) use($sid){
-
-			if($sid > 0)
-			{
-				$query->where('store_id',Auth::user()->id);
-			}
-
-		})->where('status',2)->whereDate('created_at','LIKE',$month.'%')->count();
-
-		return ['order' => $order,'cancel' => $cancel];
-	}
-
-	public function storeChart()
-	{
-		$storeID = Order::where('status',6)->pluck('store_id')->toArray();
-
-
-		$data = [];
-
-		foreach(array_unique($storeID) as $sid)
-		{
-			$user = User::find($sid);
-
-			if(isset($user->id))
-			{
-				$data[] = ['name' => preg_replace('([^A-Za-z0-9])', '', $user->name),'order' => Order::where('store_id',$sid)->where('status',6)->count()];
-			}
-		}	
-
-		 arsort($data);
-
-		 return $data;
-	}
-
-	public function getStoreData($data,$index,$type)
-	{
-		
-		if(isset($data[$index]))
-		{
-			return $data[$index][$type];
-		}
-		else
-		{
-			return null;
-		}
-	}
-
-	public function getSData($data,$id,$field)
-    {
-        $data = unserialize($data);
-
-        return isset($data[$id]) ? $data[$id] : null;
-    }
-
+ 
+ 
     public function hasPerm($perm)
 	{
 		$array = explode(",", Auth::guard('admin')->user()->perm);

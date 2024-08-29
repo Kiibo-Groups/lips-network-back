@@ -1,19 +1,20 @@
-<?php namespace App\Http\Controllers\api;
+<?php
+namespace App\Http\Controllers\api;
 
 use App\Http\Requests;
-use App\Http\Controllers\Controller;  
+use App\Http\Controllers\Controller;
 
 use Illuminate\Http\Request;
 use Auth;
 use App\Offer;
-use App\User; 
-use App\AppUser; 
-use App\Banner; 
-use App\Admin; 
+use App\User;
+use App\AppUser;
+use App\Banner;
+use App\Models\Admin;
 use App\Language;
 use App\Text;
 use App\Delivery;
-use App\CategoryStore; 
+use App\CategoryStore;
 use App\Favorites;
 use DB;
 use Validator;
@@ -21,123 +22,57 @@ use Redirect;
 use Excel;
 use Stripe;
 
-class ApiController extends Controller {
+class ApiController extends Controller
+{
 
- 
+
 	public function getDataInit()
 	{
-		$text    = new Text;
-		$l 		 = Language::find($_GET['lid']);
+		$text = new Text;
+		$l = Language::find($_GET['lid']);
 
 		$data = [
-			'text'		=> $text->getAppData($_GET['lid']),
-			'app_type'	=> isset($l->id) ? $l->type : 0,
-			'admin'		=> Admin::find(1),
+			'text' => $text->getAppData($_GET['lid']),
+			'app_type' => isset($l->id) ? $l->type : 0,
+			'admin' => Admin::find(1),
 		];
 
 		return response()->json(['data' => $data]);
-		
+
 	}
 
 	public function homepage()
 	{
-		$banner  = new Banner;
-		$store   = new User; 
-		$cats    = new CategoryStore; 
+		$banner = new Banner;
+		$store = new User;
+		$cats = new CategoryStore;
 
 		$data = [
-			'admin'		=> Admin::find(1),
-			'banner'	=> $banner->getAppData(1,0),
-			'store'		=> $store->getAppData(1),
-			'trending'	=> $store->InTrending(1), //$store->getAppData($city_id,true),
+			'admin' => Admin::find(1),
+			'banner' => $banner->getAppData(1, 0),
+			'store' => $store->getAppData(1),
+			'trending' => $store->InTrending(1), //$store->getAppData($city_id,true),
 			'Categorys' => $cats->getAllCats()
 		];
 
 		return response()->json(['data' => $data]);
 	}
 
-	public function ViewAllCats()
-	{
-		$cats    = new CategoryStore;
-	
-		$data = [
-			'Categorys' => $cats->getAllCats(),
-		];
-
-		return response()->json(['data' => $data]);
-	}
-
-	public function getStoreOpen($city_id)
-	{
-		$store   = new User;
-	
-		$data = [
-			'store'		=> $store->getStoreOpen($city_id),
-			'admin'		=> Admin::find(1),
-		];
-
-		return response()->json(['data' => $data]);		
-	}
-
-	public function getStore($id)
+	/**
+	 * Signup / Login
+	 * @param \Illuminate\Http\Request $Request
+	 * @return mixed|\Illuminate\Http\JsonResponse
+	 */
+	public function login(Request $Request)
 	{
 		try {
-			$store   = new User;  
-			return response()->json(['data' => $store->getStore($id)]);
+			$res = new AppUser;
+			return response()->json($res->login($Request->all()));
 		} catch (\Throwable $th) {
-			return response()->json(['data' => "error",'error' => $th->getMessage()]);
+			return response()->json(['msg' => 'error', 'error' => $th->getMessage()]);
 		}
 	}
 
-	public function GetInfiniteScroll($city_id) {
-		
-		$store   = new User;
-		
-		$data = [
-			'store'		=> $store->GetAllStores($city_id)
-		];
-
-		return response()->json(['data' => $data]);
-	}
- 
-	public function search($query,$type,$city)
-	{
-		$user = new User;
-
-		return response()->json(['data' => $user->getUser($query,$type,$city)]);
-	}
-
-	public function SearchCat($cat)
-	{
-		try {
-			$user = new User;
-
-			return response()->json([
-				'cat'	=> CategoryStore::find($cat)->name,
-				'data' 	=> $user->SearchCat($cat)
-			]);
-		} catch (\Throwable $th) {
-			return response()->json(['data' => "error",'error' => $th->getMessage()]);
-		}
-	}
-
-	public function SearchFilters($city_id)
-	{
-		$user = new User;
-
-		return response()->json([
-			'data' 	=> $user->SearchFilters($city_id)
-		]);
-	}
-  
-
-	public function getOffer($cartNo)
-	{
-		$res = new Offer;
-
-		return response()->json(['data' => $res->getOffer($cartNo)]);
-	}
- 
 	public function signup(Request $Request)
 	{
 		try {
@@ -150,65 +85,30 @@ class ApiController extends Controller {
 
 	public function sendOTP(Request $Request)
 	{
-		$phone = $Request->phone;
-		$hash  = $Request->hash;
-
-		return response()->json(['otp' => app('App\Http\Controllers\Controller')->sendSms($phone,$hash)]);
+		try {
+			$phone = $Request->phone;
+			$hash = $Request->hash;
+			return response()->json(['otp' => app('App\Http\Controllers\Controller')->sendSms($phone, $hash)]);
+		} catch (\Throwable $th) {
+			return response()->json(['msg' => 'error', 'error' => $th->getMessage()]);
+		}
 	}
 
-	public function SignPhone(Request $Request)
-	{
-		$res = new AppUser;
-
-		return response()->json($res->SignPhone($Request->all()));
-	}
-
+	/**
+	 * Validacion de usuario
+	 * @param \Illuminate\Http\Request $Request
+	 * @return mixed|\Illuminate\Http\JsonResponse
+	 */
 	public function chkUser(Request $Request)
 	{
-		$res = new AppUser;
-
-		return response()->json($res->chkUser($Request->all()));
+		try {
+			$res = new AppUser;
+			return response()->json($res->chkUser($Request->all()));
+		} catch (\Throwable $th) {
+			return response()->json(['msg' => 'error', 'error' => $th->getMessage()]);
+		}
 	}
 
-	public function login(Request $Request)
-	{
-		$res = new AppUser; 
-		return response()->json($res->login($Request->all()));
-	}
-
-	public function Newlogin(Request $Request)
-	{
-		$res = new AppUser;
-
-		return response()->json($res->Newlogin($Request->all()));
-	}
-
-	public function forgot(Request $Request)
-	{
-		$res = new AppUser;
-		return response()->json($res->forgot($Request->all()));
-	}
-
-	public function verify(Request $Request)
-	{
-		$res = new AppUser; 
-		return response()->json($res->verify($Request->all()));
-	}
-
-	public function updatePassword(Request $Request)
-	{
-		$res = new AppUser;
-
-		return response()->json($res->updatePassword($Request->all()));
-	}
-
-	public function loginFb(Request $Request)
-	{
-		$res = new AppUser;
-
-		return response()->json($res->loginFb($Request->all()));
-	}
-  
 	public function userinfo($id)
 	{
 		try {
@@ -223,92 +123,121 @@ class ApiController extends Controller {
 		}
 	}
 
-	public function signupOP(Request $Request)
-	{
-		try {
-			$res = new AppUser;
-			return response()->json(['data' => $res->signupOP($Request->all())]);
-		} catch (\Exception $th) {
-			return response()->json(['data' => "error",'error' => $th->getMessage()]);
-		}
-	}
-
-	public function updateInfo($id,Request $Request)
-	{
-		try {
-			$res = new AppUser;
-			return response()->json($res->updateInfo($Request->all(),$id));
-		} catch (\Exception $th) {
-			return response()->json(['data' => "error",'error' => $th->getMessage()]);
-		}
-	}
-  
-
-	public function stripe()
-	{
-
-		try {
-			Stripe\Stripe::setApiKey(Admin::find(1)->stripe_api_id);
-
-			$res = Stripe\Charge::create ([
-					"amount" => $_GET['amount'] * 100,
-					"currency" => "MXN",
-					"source" => $_GET['token'],
-					"description" => "Pago de compra en FudiApp"
-			]);
-
-			if($res['status'] === "succeeded")
-			{
-				return response()->json(['data' => "done",'id' => $res['source']['id']]);
-			}
-			else
-			{
-				return response()->json(['data' => "error"]);
-			}
-		} catch (\Throwable $th) {
-			return response()->json(['data' => "error"]);
-		}
-	}
- 
 
 	/**
-	 * 
-	 *  Favorites Funcions
-	 * 
+	 * Recuperacion de cuenta
+	 * @param \Illuminate\Http\Request $Request
+	 * @return mixed|\Illuminate\Http\JsonResponse
 	 */
+	public function forgot(Request $Request)
+	{
+		$res = new AppUser;
+		return response()->json($res->forgot($Request->all()));
+	}
 
-	 public function SetFavorite(Request $Request)
-	 {
+	public function verify(Request $Request)
+	{
+		$res = new AppUser;
+		return response()->json($res->verify($Request->all()));
+	}
+
+	public function updatePassword(Request $Request)
+	{
+		$res = new AppUser;
+
+		return response()->json($res->updatePassword($Request->all()));
+	}
+
+	public function updateInfo($id, Request $Request)
+	{
+		try {
+			$res = new AppUser;
+			return response()->json($res->updateInfo($Request->all(), $id));
+		} catch (\Exception $th) {
+			return response()->json(['data' => "error", 'error' => $th->getMessage()]);
+		}
+	}
+
+	/**
+	 * Favorites Funcions
+	 * @param \Illuminate\Http\Request $Request
+	 * @return mixed|\Illuminate\Http\JsonResponse
+	 */
+	public function SetFavorite(Request $Request)
+	{
 		try {
 			$req = new Favorites;
-			
+
 			return response()->json(['data' => $req->addNew($Request->all())]);
 		} catch (\Throwable $th) {
 			return response()->json(['data' => "error"]);
 		}
-	 }
+	}
 
-	 public function GetFavorites($id)
-	 {
+	public function GetFavorites($id)
+	{
 		try {
 			$req = new Favorites;
-			
-			return response()->json(['data' => $req->GetFavorites($id)]);	
+
+			return response()->json(['data' => $req->GetFavorites($id)]);
 		} catch (\Exception $th) {
-			return response()->json(['data' => "error",'error' => $th->getMessage()]);
+			return response()->json(['data' => "error", 'error' => $th->getMessage()]);
 		}
-	 }
+	}
 
-	 public function TrashFavorite($id, $user)
-	 {
+	public function TrashFavorite($id, $user)
+	{
 		try {
 			$req = new Favorites;
-			return response()->json(['data' => $req->TrashFavorite($id, $user)]);	
+			return response()->json(['data' => $req->TrashFavorite($id, $user)]);
 		} catch (\Throwable $th) {
-			return response()->json(['data' => "error",'error' => $th]);
+			return response()->json(['data' => "error", 'error' => $th]);
 		}
-	 }
+	}
 
-	  
 
+	/**
+	 * Control de Tickets
+	 * @param \Illuminate\Http\Request $Request
+	 * @return void
+	 */
+	public function UploadTicket(Request $request)
+	{
+		try { 
+			$input  = $request->all();
+			$imagen = $input['imagen'];
+			$userId	= $input['id_cliente'];
+			
+			
+			$target_path = "public/assets/tickets/";
+			if (!file_exists("public/assets/tickets/")) {
+				mkdir("public/assets/tickets/", 0777, true);
+			}
+
+			$base64Image = $imagen; // 
+
+			// Obtener el tipo y los datos binarios desde la cadena base64
+			list($type, $data) = explode(';', $base64Image);
+			list(, $data)      = explode(',', $data);
+
+			// Decodificar los datos binarios de base64
+			$filename   = time() . rand(1119, 6999) . '.png';
+			$imageData = base64_decode($data);
+			$rutaImagenJPG = "public/assets/tickets/" . $filename;
+
+			file_put_contents($rutaImagenJPG, $imageData);
+
+			$data = [
+				'app_user_id'   => $userId,
+				'imagen'       => $target_path . $filename,
+				'fecha'        => Carbon::now()->format('Y-m-d'),
+			];
+
+			$tickets   = Tickets::create($data);
+
+			return response()->json(['code' => 200, 'data' => $tickets, 'message' => 'Se ha creado el Tickets.']);
+		} catch (\Throwable $th) {
+			return response()->json(['data' => $th]);
+		}
+	}
 }

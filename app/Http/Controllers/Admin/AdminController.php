@@ -5,12 +5,8 @@ use App\Http\Controllers\Controller;
 
 use Illuminate\Http\Request;
 use Auth;
-use App\Admin;
-use App\User;
-use App\AppUser;
-use App\Order;
-use App\OrderItem;
-use App\Delivery;
+use App\Models\Admin;
+use App\Models\AppUser; 
 use DB;
 use Validator;
 use Redirect;
@@ -58,7 +54,7 @@ class AdminController extends Controller {
 	public function home()
 	{
 		$admin = new Admin;
-		$order = new Order;
+		 
 
 		return View($this->folder.'dashboard.home',[
 

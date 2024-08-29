@@ -4,7 +4,7 @@ use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Auth; 
-use App\Admin;
+use App\Models\Admin;
 
 use DB;
 use Validator;

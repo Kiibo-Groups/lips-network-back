@@ -3,13 +3,9 @@
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Auth;
-use App\Banner;
-use App\City;
-use App\User;
-use App\Text;
-use App\Language;
-use App\Admin;
+use Auth; 
+use App\Models\Text; 
+use App\Models\Admin;
 use DB;
 use Validator;
 use Redirect;

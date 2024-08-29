@@ -1,14 +1,14 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Validator;
 use Auth;
-class Category_addon extends Authenticatable
+class Category extends Authenticatable
 {
-    protected $table = "category_addon";
+    protected $table = "category";
     /*
     |----------------------------------------------------------------
     |   Validation Rules and Validate data for add & Update Records
@@ -42,11 +42,22 @@ class Category_addon extends Authenticatable
 
     public function addNew($data,$type)
     {
+        if (isset($data['type']) && $data['type'] == 0) { // de Menú
+            $name = $data['name'];
+        }else {
+            $name = $data['description'];
+        }
+        
         $a                  = isset($data['lid']) ? array_combine($data['lid'], $data['l_name']) : [];
-        $add                = $type === 'add' ? new Category_addon : Category_addon::find($type);
+        $add                = $type === 'add' ? new Category : Category::find($type);
         $add->store_id      = Auth::user()->id;
-        $add->description   = isset($data['name']) ? $data['name'] : null;
+        $add->name          = $name;
         $add->status        = isset($data['status']) ? $data['status'] : null;
+        $add->type          = isset($data['type']) ? $data['type'] : 0;
+        $add->required      = isset($data['required']) ? $data['required'] : 0;
+        $add->single_option = isset($data['single_option']) ? $data['single_option'] : 0;
+        $add->max_options   = isset($data['max_options']) ? $data['max_options'] : 0;
+        $add->id_element    = isset($data['id_element']) ? $data['id_element'] : '';
         $add->sort_no       = isset($data['sort_no']) ? $data['sort_no'] : 0;
         $add->s_data        = serialize($a);
         $add->save();
@@ -59,7 +70,10 @@ class Category_addon extends Authenticatable
     */
     public function getAll()
     {
-        return Category_addon::where('store_id',Auth::user()->id)->orderBy('sort_no','ASC')->get();
+        return Category::where('store_id',Auth::user()->id)
+        ->orderBy('sort_no','ASC')
+        ->paginate(15);
+        
     }
 
     public function getSData($data,$id,$field)
@@ -68,4 +82,8 @@ class Category_addon extends Authenticatable
 
         return isset($data[$id]) ? $data[$id] : null;
     }
+
+    //Query Scope
+    
+
 }

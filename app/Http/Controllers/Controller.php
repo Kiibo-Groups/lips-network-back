@@ -7,7 +7,7 @@ use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Twilio\Rest\Client;
-use App\Admin;
+use App\Models\Admin;
 use App\Language;
 use Twilio;
 class Controller extends BaseController
@@ -167,12 +167,5 @@ class Controller extends BaseController
     		return "Rs.";
     	}
     }
- 
-
-	public function getLang()
-	{
-		$res = new Language;
-		
-		return $res->getAll();
-	}
+  
 }
