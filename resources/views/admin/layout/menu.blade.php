@@ -71,7 +71,7 @@
 		</li>
 		@endif
   
-		<!-- Banners -->
+		<!-- Banners  
 		@if($admin->hasPerm('Banners'))
 		<li class="menu-item @if($page === 'banner') active @endif">
 			<a href="{{ Asset(env('admin').'/banner') }}" class="menu-link">
@@ -86,7 +86,7 @@
 			</a>
 		</li>
 		@endif
-	 	<!-- Banners -->
+	 	 Banners -->
  
 		 @if($admin->hasPerm('Dashboard - Categorias'))
 		 <li class="menu-item @if($page === 'category') active @endif">
@@ -103,7 +103,7 @@
 
 		
 
-		<!-- Negocios -->
+		<!-- Negocios  
 		@if($admin->hasPerm('Adminisrtar Restaurantes'))
 		<li class="menu-item @if($page === 'user') active @endif">
 			<a href="{{ Asset(env('admin').'/user') }}" class="menu-link">
@@ -116,7 +116,7 @@
 			</a>
 		</li>
 		@endif
-		<!-- Negocios -->
+		  Negocios -->
   
 		
 		<!-- Tickets --> 
