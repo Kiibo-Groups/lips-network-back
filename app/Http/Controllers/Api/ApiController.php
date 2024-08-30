@@ -16,6 +16,7 @@ use App\Models\Favorites;
 use App\Models\Tickets;
 use App\Models\Reward;
 use App\Models\LeaderBoard;
+use App\Models\Withdrawals;
 use DB;  
 class ApiController extends Controller
 {
@@ -287,5 +288,25 @@ class ApiController extends Controller
 		$leaders = new LeaderBoard;
 
 		return response()->json(['data' => $leaders->GetListLeaders()]);
+	}
+
+	public function RequestWithdrawal(Request $request)
+	{
+
+		try {
+			$withdrawals = new Withdrawals;
+			$input 		 = $request->all();
+
+			$add = $withdrawals->create($input);
+
+			// Quitamos el saldo al usuario
+			$user = AppUser::find($input['app_user_id']);
+			$user->saldo = 0;
+			$user->save();
+
+			return response()->json(['data' => $add]);
+		} catch (\Exception $th) {
+			return response()->json(['data' => "error", 'error' => $th->getMessage()]);
+		}
 	}
 }

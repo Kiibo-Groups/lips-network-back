@@ -159,6 +159,20 @@
 		</li> 
 		<!-- LeaderBoard -->
 
+		<!-- Solicitudes de retiro --> 
+		<li class="menu-item @if($page === 'withdrawal') active @endif">
+			<a href="{{ Asset(env('admin').'/withdrawal') }}" class="menu-link">
+				<span class="menu-icon">
+					<i class="icon-placeholder mdi mdi-cash"></i>
+				</span>
+				<span class="menu-label">
+					<span class="menu-name">Solicitudes de retiro</span>
+				</span>
+			</a>
+		</li> 
+		<!-- Solicitudes de retiro -->
+
+
  
 		<!-- Usuarios -->
 		@if($admin->hasPerm('Usuarios Registrados'))

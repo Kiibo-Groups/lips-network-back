@@ -66,4 +66,6 @@ Route::group(array('namespace' => 'Api'), function () {
 
 
     Route::get('getListLeaders','ApiController@GetListLeaders');
+
+    Route::post('requestWithdrawal','ApiController@RequestWithdrawal');
 });
