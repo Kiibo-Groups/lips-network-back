@@ -57,7 +57,7 @@ class Tickets extends Authenticatable
 
     public function getAll()
     {
-        $req = Tickets::OrderBy('created_at','DESC')->get();
+        $req = Tickets::OrderBy('status','ASC')->get();
         $data = [];
 
         foreach ($req as $key) {
