@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Models;
- 
+
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -9,207 +9,210 @@ use Validator;
 use Mail;
 class AppUser extends Authenticatable
 {
-   protected $table = 'app_user';
+    protected $table = 'app_user';
 
-   public function addNew($data)
-   {
-     $count = AppUser::where('email',$data['email'])->count();
 
-     if($count == 0)
-     {
-        if (filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
-           try {
-            $add                = new AppUser;
-            $add->name          = $data['name'];
-            $add->email         = $data['email'];
-            $add->phone         = isset($data['phone']) ? $data['phone'] : 'null';
-            $add->password      = Hash::make($data['password']);
-            $add->shw_password  = $data['password']; 
-            $add->refered       = isset($data['refered']) ? $data['refered'] : '';
-            $add->status        = 1; // Activo
-            $add->save();
+    protected $fillable = [
+        'id',
+        'status',
+        'name',
+        'email',
+        'password',
+        'shw_password',
+        'phone',
+        'otp',
+        'refered',
+        'saldo',
+        'score'
+    ];
 
-            return ['msg' => 'done','user_id' => $add->id];
-           }catch (\Throwable $th) {
-            return ['msg' => $th,'error' => $th];
-           }
-        }else {
-            return ['msg' => 'Opps! El Formato del Email es invalido'];
+    public function Tickets()
+    {
+        return $this->hasMany(Tickets::class);
+    }
+
+    public function TicketAprov()
+    {
+        return $this->belongsTo(Tickets::class,'status','id');
+    }
+
+    public function addNew($data)
+    {
+        $count = AppUser::where('email', $data['email'])->count();
+
+        if ($count == 0) {
+            if (filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
+                try {
+                    $add = new AppUser;
+                    $add->name = $data['name'];
+                    $add->email = $data['email'];
+                    $add->phone = isset($data['phone']) ? $data['phone'] : 'null';
+                    $add->password = Hash::make($data['password']);
+                    $add->shw_password = $data['password'];
+                    $add->refered = isset($data['refered']) ? $data['refered'] : '';
+                    $add->status = 1; // Activo
+                    $add->save();
+
+                    return ['msg' => 'done', 'user_id' => $add->id];
+                } catch (\Throwable $th) {
+                    return ['msg' => $th, 'error' => $th];
+                }
+            } else {
+                return ['msg' => 'Opps! El Formato del Email es invalido'];
+            }
+        } else {
+            return ['msg' => 'Opps! Este correo electrónico ya existe.'];
         }
-     }
-     else
-     {
-        return ['msg' => 'Opps! Este correo electrónico ya existe.'];
-     }
-   }
- 
+    }
 
-   public function chkUser($data)
-   {
-        
+
+    public function chkUser($data)
+    {
+
         if (isset($data['user_id']) && $data['user_id'] != 'null') {
             // Intentamos con el id
             $res = AppUser::find($data['user_id']);
             if (isset($res->id)) {
-                return ['msg' => 'user_exist', 'user_id' => $res->id, 'data' => collect($res)->except(['shw_password','password','created_at','updated_at','otp'])];
-            }else {
+                return ['msg' => 'user_exist', 'user_id' => $res->id, 'data' => collect($res)->except(['shw_password', 'password', 'created_at', 'updated_at', 'otp'])];
+            } else {
                 return ['msg' => 'not_exist'];
             }
-        }else {
+        } else {
             return ['msg' => 'not_exist'];
         }
-   }
+    }
 
-   public function SignPhone($data) 
-   {
-        $res = AppUser::where('id',$data['user_id'])->first();
+    public function SignPhone($data)
+    {
+        $res = AppUser::where('id', $data['user_id'])->first();
 
-        if($res->id)
-        {
+        if ($res->id) {
             $res->phone = $data['phone'];
             $res->save();
 
-            $return = ['msg' => 'done','user_id' => $res->id];
-        }
-        else
-        {
-            $return = ['msg' => 'error','error' => '¡Lo siento! Algo salió mal.'];
+            $return = ['msg' => 'done', 'user_id' => $res->id];
+        } else {
+            $return = ['msg' => 'error', 'error' => '¡Lo siento! Algo salió mal.'];
         }
 
         return $return;
-   }
-
-   public function login($data)
-   {
-     $chk = AppUser::where('email',$data['email'])->first();
-
-     if(isset($chk->id))
-     {
-        // Generamos el OTP de acceso
-        $otp = rand(1111,9999);
-        // Guardamos
-        $chk->otp = $otp;
-        $chk->save();
-        // // Enviamos por Email
-        $para       =   $data['email'];
-        $asunto     =   'Tu codigo de acceso - Lips Network';
-        $mensaje    =   "Hola ".$chk->name." Un gusto saludarte, se ha solicitado un codigo de recuperacion para acceder a tu cuenta de Lips Network";
-        $mensaje    .=  ' '.'<br>';
-        $mensaje    .=  "Tu codigo es: <br />";
-        $mensaje    .=  '# '.$otp;
-        $mensaje    .=  "<br /><hr />Recuerda, si no lo has solicitado tu has caso omiso a este mensaje y recomendamos hacer un cambio en tu contrasena.";
-        $mensaje    .=  "<br/ ><br /><br /> Te saluda el equipo de Lips Network";
-    
-        $cabeceras = 'From: lipsnetwork@gmail.com' . "\r\n";
-        
-        $cabeceras .= 'MIME-Version: 1.0' . "\r\n";
-        
-        $cabeceras .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
-        mail($para, $asunto, utf8_encode($mensaje), $cabeceras);
-
-        return ['msg' => 'done','user_id' => $chk->id ,'otp' => $otp];
-     }
-     else
-     {
-        return ['msg' => 'Opps! El Email proporcionado no existe. Por favor valida tú información'];
-     }
-   }
-
-   public function Newlogin($data) 
-   {
-    $chk = AppUser::where('phone',$data['phone'])->first();
-
-    if(isset($chk->id))
-    {
-       return ['msg' => 'done','user_id' => $chk->id];
     }
-    else
-    {
-       return ['msg' => 'Opps! El usuario no existe...'];
-    }
-   }
 
-   public function loginfb($data) 
-   {
-    $chk = AppUser::where('email',$data['email'])->first();
-
-    if(isset($chk->id))
+    public function login($data)
     {
-        if ($chk->password == $data['password']) {
-            // Esta logeado con facebook
-            return ['msg' => 'done','user_id' => $chk->id];
-        }else {
-            // Esta logeado normal pero si existe se registra el FB - ID
-            $chk->pswfacebook = $data['password'];
+        $chk = AppUser::where('email', $data['email'])->first();
+
+        if (isset($chk->id)) {
+            // Generamos el OTP de acceso
+            $otp = rand(1111, 9999);
+            // Guardamos
+            $chk->otp = $otp;
             $chk->save();
-            // Registramos
-            return ['msg' => 'done','user_id' => $chk->id];
+            // // Enviamos por Email
+            $para = $data['email'];
+            $asunto = 'Tu codigo de acceso - Lips Network';
+            $mensaje = "Hola " . $chk->name . " Un gusto saludarte, se ha solicitado un codigo de recuperacion para acceder a tu cuenta de Lips Network";
+            $mensaje .= ' ' . '<br>';
+            $mensaje .= "Tu codigo es: <br />";
+            $mensaje .= '# ' . $otp;
+            $mensaje .= "<br /><hr />Recuerda, si no lo has solicitado tu has caso omiso a este mensaje y recomendamos hacer un cambio en tu contrasena.";
+            $mensaje .= "<br/ ><br /><br /> Te saluda el equipo de Lips Network";
+
+            $cabeceras = 'From: lipsnetwork@gmail.com' . "\r\n";
+
+            $cabeceras .= 'MIME-Version: 1.0' . "\r\n";
+
+            $cabeceras .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
+            mail($para, $asunto, utf8_encode($mensaje), $cabeceras);
+
+            return ['msg' => 'done', 'user_id' => $chk->id, 'otp' => $otp];
+        } else {
+            return ['msg' => 'Opps! El Email proporcionado no existe. Por favor valida tú información'];
         }
     }
-    else
+
+    public function Newlogin($data)
     {
-       return ['msg' => 'Opps! Detalles de acceso incorrectos'];
-    }
-   }
+        $chk = AppUser::where('phone', $data['phone'])->first();
 
-   public function updateInfo($data,$id)
-   {
-      $count = AppUser::where('id','!=',$id)->where('email',$data['email'])->count();
-
-     if($count == 0)
-     {
-        $add                = AppUser::find($id);
-        $add->name          = $data['name'];
-        $add->email         = $data['email'];
-        $add->phone         = $data['phone'];
-        
-        if(isset($data['password']))
-        {
-          $add->password    = $data['password'];
+        if (isset($chk->id)) {
+            return ['msg' => 'done', 'user_id' => $chk->id];
+        } else {
+            return ['msg' => 'Opps! El usuario no existe...'];
         }
+    }
 
-        $add->save();
+    public function loginfb($data)
+    {
+        $chk = AppUser::where('email', $data['email'])->first();
 
-        return ['data' => 'done','user_id' => $add->id, 'req' => $add];
-     }
-     else
-     {
-        return ['data' => 'Opps! Este correo electrónico ya existe.'];
-     }
-   }
+        if (isset($chk->id)) {
+            if ($chk->password == $data['password']) {
+                // Esta logeado con facebook
+                return ['msg' => 'done', 'user_id' => $chk->id];
+            } else {
+                // Esta logeado normal pero si existe se registra el FB - ID
+                $chk->pswfacebook = $data['password'];
+                $chk->save();
+                // Registramos
+                return ['msg' => 'done', 'user_id' => $chk->id];
+            }
+        } else {
+            return ['msg' => 'Opps! Detalles de acceso incorrectos'];
+        }
+    }
+
+    public function updateInfo($data, $id)
+    {
+        $count = AppUser::where('id', '!=', $id)->where('email', $data['email'])->count();
+
+        if ($count == 0) {
+            $add = AppUser::find($id);
+            $add->name = $data['name'];
+            $add->email = $data['email'];
+            $add->phone = $data['phone'];
+
+            if (isset($data['password'])) {
+                $add->password = $data['password'];
+            }
+
+            $add->save();
+
+            return ['data' => 'done', 'user_id' => $add->id, 'req' => $add];
+        } else {
+            return ['data' => 'Opps! Este correo electrónico ya existe.'];
+        }
+    }
 
     public function forgot($data)
     {
-        $res = AppUser::where('email',$data['email'])->first();
+        $res = AppUser::where('email', $data['email'])->first();
 
-        if(isset($res->id))
-        {
-            $otp = rand(1111,9999);
+        if (isset($res->id)) {
+            $otp = rand(1111, 9999);
 
             $res->otp = $otp;
             $res->save();
 
-            $para       =   $data['email'];
-            $asunto     =   'Codigo de acceso - Lips Network';
-            $mensaje    =   "Hola ".$res->name." Un gusto saludarte, se ha pedido un codigo de recuperacion para acceder a tu cuenta en Lips Network";
-            $mensaje    .=  ' '.'<br>';
-            $mensaje    .=  "Tu codigo es: <br />";
-            $mensaje    .=  '# '.$otp;
-            $mensaje    .=  "<br /><hr />Recuerda, si no lo has solicitado tu has caso omiso a este mensaje y te recomendamos hacer un cambio en tu contrasena.";
-            $mensaje    .=  "<br/ ><br /><br /> Te saluda el equipo de Lips Network";
-        
+            $para = $data['email'];
+            $asunto = 'Codigo de acceso - Lips Network';
+            $mensaje = "Hola " . $res->name . " Un gusto saludarte, se ha pedido un codigo de recuperacion para acceder a tu cuenta en Lips Network";
+            $mensaje .= ' ' . '<br>';
+            $mensaje .= "Tu codigo es: <br />";
+            $mensaje .= '# ' . $otp;
+            $mensaje .= "<br /><hr />Recuerda, si no lo has solicitado tu has caso omiso a este mensaje y te recomendamos hacer un cambio en tu contrasena.";
+            $mensaje .= "<br/ ><br /><br /> Te saluda el equipo de Lips Network";
+
             $cabeceras = 'From: babelmarketapis@gmail.com' . "\r\n";
-            
+
             $cabeceras .= 'MIME-Version: 1.0' . "\r\n";
-            
+
             $cabeceras .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
             mail($para, $asunto, utf8_encode($mensaje), $cabeceras);
-        
-            $return = ['msg' => 'done','user_id' => $res->id];
-        }
-        else
-        {
-            $return = ['msg' => 'error','error' => '¡Lo siento! Este correo electrónico no está registrado con nosotros.'];
+
+            $return = ['msg' => 'done', 'user_id' => $res->id];
+        } else {
+            $return = ['msg' => 'error', 'error' => '¡Lo siento! Este correo electrónico no está registrado con nosotros.'];
         }
 
         return $return;
@@ -217,15 +220,12 @@ class AppUser extends Authenticatable
 
     public function verify($data)
     {
-        $res = AppUser::where('id',$data['user_id'])->where('otp',$data['otp'])->first();
+        $res = AppUser::where('id', $data['user_id'])->where('otp', $data['otp'])->first();
 
-        if(isset($res->id))
-        {
-            $return = ['msg' => 'done','user_id' => $res->id , 'user_dat' => $res];
-        }
-        else
-        {
-            $return = ['msg' => 'error','error' => '¡Lo siento! El Código OTP no coincide.'];
+        if (isset($res->id)) {
+            $return = ['msg' => 'done', 'user_id' => $res->id, 'user_dat' => $res];
+        } else {
+            $return = ['msg' => 'error', 'error' => '¡Lo siento! El Código OTP no coincide.'];
         }
 
         return $return;
@@ -233,36 +233,30 @@ class AppUser extends Authenticatable
 
     public function updatePassword($data)
     {
-        $res = AppUser::where('id',$data['user_id'])->first();
+        $res = AppUser::where('id', $data['user_id'])->first();
 
-        if(isset($res->id))
-        {
+        if (isset($res->id)) {
             $res->password = $data['password'];
             $res->save();
 
-            $return = ['msg' => 'done','user_id' => $res->id];
-        }
-        else
-        {
-            $return = ['msg' => 'error','error' => '¡Lo siento! Algo salió mal.'];
+            $return = ['msg' => 'done', 'user_id' => $res->id];
+        } else {
+            $return = ['msg' => 'error', 'error' => '¡Lo siento! Algo salió mal.'];
         }
 
         return $return;
     }
-
-    public function countOrder($id)
+ 
+    /*
+   |--------------------------------------
+   |Get all data from db
+   |--------------------------------------
+   */
+    public function getAll()
     {
-        return Order::where('user_id',$id)->where('status','>',0)->count();
-    }
-
-     /*
-    |--------------------------------------
-    |Get all data from db
-    |--------------------------------------
-    */
-    public function getAll($store = 0)
-    {
-        return AppUser::get();
+        $req = AppUser::withCount('Tickets')->withSum('tickets',"score")->paginate(10);
+         
+        return $req;
     }
 
     /*
@@ -272,36 +266,49 @@ class AppUser extends Authenticatable
     */
     public function getReport($data)
     {
-        $res = AppUser::where(function($query) use($data) {
+        $res = AppUser::where(function ($query) use ($data) {
 
-            if($data['user_id'])
-            {
-                $query->where('app_user.id',$data['user_id']);
+            if ($data['user_id']) {
+                $query->where('app_user.id', $data['user_id']);
             }
 
         })->select('app_user.*')
-        ->orderBy('app_user.id','ASC')->get();
+            ->orderBy('app_user.id', 'ASC')->get();
 
-       $allData = [];
+        $allData = [];
 
-       foreach($res as $row)
-       {
+        foreach ($res as $row) {
 
             // Obtenemos el comercio
             $store = User::find($row->ord_store_id);
 
             $allData[] = [
-                'id'                => $row->id,
-                'status'            => $row->status,
-                'name'              => $row->name,
-                'email'             => $row->email,
-                'Telefono'          => $row->phone,
-                'refered'           => $row->refered
+                'id' => $row->id,
+                'status' => $row->status,
+                'name' => $row->name,
+                'email' => $row->email,
+                'Telefono' => $row->phone,
+                'refered' => $row->refered
             ];
-       }
+        }
 
-       return $allData;
+        return $allData;
     }
 
-     
+    public function overview($id)
+    {
+        $req = AppUser::where('id',$id)->withCount('Tickets')
+        ->withSum('tickets',"score")->first();
+
+        $tickets_aprov = Tickets::where("app_user_id",$id)->where('status',1)->count();
+        $tickets_deneg  = Tickets::where('app_user_id',$id)->where('status',2)->count();
+
+        return [
+            'wallet' => $req->saldo,
+            'tickets_count' => $req->tickets_count,
+            'tickets_sum_score' => $req->tickets_sum_score,
+            'tickets_aprov' => $tickets_aprov,
+            'tickets_deneg' => $tickets_deneg
+        ];
+    }
 }

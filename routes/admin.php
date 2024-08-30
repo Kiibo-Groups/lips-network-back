@@ -189,9 +189,45 @@ Route::group(['namespace' => 'Admin','prefix' => env('admin')], function(){
         |App Users
         |-------------------------------
         */
-        Route::get('appUser','AdminController@appUser');
-        Route::get('appUser/status/{id}', 'AdminController@status');
-        Route::get('appUser/trash/{id}', 'AdminController@trash');
+        Route::get('appUser','AppUserController@index');
+        Route::get('appUser/status/{id}', 'AppUserController@status');
+        Route::get('appUser/trash/{id}', 'AppUserController@trash');
+        Route::get('appUser/{id}/wallet', 'AppUserController@wallet');
+        Route::patch('appUser/update_wallet/{id}','AppUserController@update_wallet');
+        Route::get('appUser/resetWallet/{id}', 'AppUserController@resetWallet');
+        Route::get('appUser/{id}/score', 'AppUserController@score');
+        Route::patch('appUser/update_score/{id}','AppUserController@update_score');
+        Route::get('appUser/resetScore/{id}', 'AppUserController@resetScore');
+
+        
+        /*
+        |-------------------------------
+        |Ticktets
+        |-------------------------------
+        */
+        Route::get('tickets','TicketsController@index');
+        Route::get('tickets/view/{id}','TicketsController@ViewTicket');
+        Route::patch('ticket_edit/{id}','TicketsController@ticket_edit');
+
+
+        
+        /*
+        |-------------------------------
+        |Leaderboard
+        |-------------------------------
+        */
+        Route::get('leaderboard','LeaderBoardController@index');
+        Route::get('leaderboard/edit','LeaderBoardController@EditLeaderboard');
+        Route::patch('leaderboard','LeaderBoardController@_EditLeaderboard');
+        Route::get('leaderboard/cashpool','LeaderBoardController@cashpool');
+
+        /*
+        |-------------------------------
+        |Recompensas
+        |-------------------------------
+        */
+        Route::get('rewards','RewardsController@index'); 
+        
     });
 });
 

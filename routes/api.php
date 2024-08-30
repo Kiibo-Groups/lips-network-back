@@ -55,5 +55,15 @@ Route::group(array('namespace' => 'Api'), function () {
      * Tickets
      */
     Route::post('uploadTicket', 'ApiController@UploadTicket');
+    Route::get('getLastTicket/{id}', 'ApiController@GetLastTicket');
+    Route::get('getAllTickets/{id}','ApiController@GetAllTickets');
 
+    /**
+     * Rewards
+     */
+    Route::get('getMyRewards/{id}', 'ApiController@GetMyRewards');
+    route::get('overview/{id}', 'ApiController@overview');
+
+
+    Route::get('getListLeaders','ApiController@GetListLeaders');
 });

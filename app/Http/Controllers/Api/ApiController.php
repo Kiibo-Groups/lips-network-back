@@ -14,6 +14,8 @@ use App\Models\Admin;
 use App\Models\CategoryStore;
 use App\Models\Favorites;
 use App\Models\Tickets;
+use App\Models\Reward;
+use App\Models\LeaderBoard;
 use DB;  
 class ApiController extends Controller
 {
@@ -39,6 +41,7 @@ class ApiController extends Controller
 		$banner = new Banner;
 		$store = new User;
 		$cats = new CategoryStore;
+		
 
 		$data = [
 			'admin' => Admin::find(1),
@@ -221,8 +224,8 @@ class ApiController extends Controller
 			file_put_contents($rutaImagenJPG, $imageData);
 
 			$data = [
-				'app_user_id'   => $userId,
-				'imagen'       => $target_path . $filename,
+				'app_user_id'  => $userId,
+				'imagen'       => $filename,
 				'fecha'        => Carbon::now()->format('Y-m-d'),
 			];
 
@@ -232,5 +235,57 @@ class ApiController extends Controller
 		} catch (\Exception $th) {
 			return response()->json(['data' => $th->getMessage()]);
 		}
+	}
+
+	public function GetAllTickets($id)
+	{
+		try {
+			$Tickets = new Tickets;
+			return response()->json(['data' => $Tickets->getAllTickets($id)]);
+		} catch (\Exception $th) {
+			return response()->json(['data' => "error", 'error' => $th->getMessage()]);
+		}
+	}
+
+	public function GetLastTicket($id)
+	{
+		try {
+			$Tickets = new Tickets;
+			return response()->json(['data' => $Tickets->getLastTicket($id)]);
+		} catch (\Exception $th) {
+			return response()->json(['data' => "error", 'error' => $th->getMessage()]);
+		}
+	}
+
+	/**
+	 * Recompensas
+	 * @param mixed $id
+	 * @return void
+	 */
+	public function GetMyRewards($id)
+	{
+		try {
+			$rewards = new Reward;
+			return response()->json(['data' => $rewards->GetMyRewards($id)]);
+		} catch (\Exception $th) {
+			return response()->json(['data' => "error", 'error' => $th->getMessage()]);
+		}
+	}
+
+	public function overview($id)
+	{
+		try {
+			$rewards = new AppUser;
+			return response()->json(['data' => $rewards->overview($id)]);
+		} catch (\Exception $th) {
+			return response()->json(['data' => "error", 'error' => $th->getMessage()]);
+		}
+	}
+
+	public function GetListLeaders()
+	{
+		$leaders = new LeaderBoard;
+
+		return response()->json(['data' => $leaders->GetListLeaders()]);
 	}
 }

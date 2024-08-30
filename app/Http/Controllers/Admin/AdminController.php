@@ -124,19 +124,29 @@ class AdminController extends Controller {
 
 	public function appUser()
 	{
-		$admin = new Admin;
-		if($admin->hasperm('Subaccount')){
+		$users = new AppUser;
 
-			return View(
-				$this->folder.'dashboard.appUser',
-				[
-					'data' => AppUser::orderBy('id','DESC')->paginate(60),
-					'link' => env('admin').'/appUser/'
-				]
-			);
-		}else {
-			return Redirect::to(env('admin').'/home')->with('error', 'No tienes permiso de ver la sección Usuarios Registrados');
-		}
+		// return response()->json([
+		// 	'data' => $users->getAll(),
+		// ]);
+
+		return View(
+			$this->folder.'dashboard.appUser',
+			[
+				'data' => $users->getAll(),
+				'link' => env('admin').'/appUser/'
+			]
+		);
+	}
+
+	public function wallet($id)
+	{
+		$res = AppUser::find($id);
+
+		return View( $this->folder.'dashboard.appUserWallet',[
+			'data' => $res,
+			'link' => env('admin').'/appUser/'
+		]);
 	}
 
 	public function status($id)

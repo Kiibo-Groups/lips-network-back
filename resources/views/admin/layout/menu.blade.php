@@ -118,23 +118,48 @@
 		@endif
 		<!-- Negocios -->
   
-		<!-- Notificaciones push -->
-		@if($admin->hasPerm('Notificaciones push'))
-		<li class="menu-item @if($page === 'push') active @endif">
-			<a href="{{ Asset(env('admin').'/push') }}" class="menu-link">
+		
+		<!-- Tickets --> 
+		<li class="menu-item @if($page === 'tickets') active @endif">
+			<a href="{{ Asset(env('admin').'/tickets') }}" class="menu-link">
 				<span class="menu-icon">
-					<i class="icon-placeholder mdi mdi-send "></i>
+					<i class="icon-placeholder mdi mdi-ticket"></i>
 				</span>
 				<span class="menu-label">
-					<span class="menu-name">
-						Notificaciones
-					</span>
+					<span class="menu-name">Gestion de Ticket's</span>
 				</span>
 			</a>
-		</li>
-		@endif
-		<!-- Notificaciones push -->
+		</li> 
+		<!-- Tickets -->
+  
+		<!-- LeaderBoard --> 
+		<li class="menu-item @if($page === 'leaderboard') active @endif">
+			<a href="{{ Asset(env('admin').'/leaderboard') }}" class="menu-link">
+				<span class="menu-icon">
+					<i class="icon-placeholder mdi mdi-ticket"></i>
+				</span>
+				<span class="menu-label">
+					<span class="menu-name">Tabla de Clasificaciones</span>
+				</span>
+			</a>
+		</li> 
+		<!-- LeaderBoard -->
 
+		
+		<!-- LeaderBoard --> 
+		<li class="menu-item @if($page === 'rewards') active @endif">
+			<a href="{{ Asset(env('admin').'/rewards') }}" class="menu-link">
+				<span class="menu-icon">
+					<i class="icon-placeholder mdi mdi-cash"></i>
+				</span>
+				<span class="menu-label">
+					<span class="menu-name">Recompensas</span>
+				</span>
+			</a>
+		</li> 
+		<!-- LeaderBoard -->
+
+ 
 		<!-- Usuarios -->
 		@if($admin->hasPerm('Usuarios Registrados'))
 		<li class="menu-item @if($page === 'appUser' || $page == 'report_users') active @endif">
