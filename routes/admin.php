@@ -228,6 +228,15 @@ Route::group(['namespace' => 'Admin','prefix' => env('admin')], function(){
         */
         Route::get('rewards','RewardsController@index'); 
         
+
+        /*
+        |-------------------------------
+        |Retiros
+        |-------------------------------
+        */
+        Route::get('withdrawal','WithdrawalController@index');
+        Route::get('withdrawal/changeStatus/{id}','WithdrawalController@changeStatus');
+        Route::get('withdrawal/cancelWithdrawal/{id}','WithdrawalController@cancelWithdrawal');
     });
 });
 

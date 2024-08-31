@@ -292,7 +292,6 @@ class ApiController extends Controller
 
 	public function RequestWithdrawal(Request $request)
 	{
-
 		try {
 			$withdrawals = new Withdrawals;
 			$input 		 = $request->all();
