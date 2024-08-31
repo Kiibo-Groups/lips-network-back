@@ -26,7 +26,9 @@ class LeaderBoard extends Authenticatable
         $score_min = $LeaderBoard->score_min;
 
         // Buscaremos entre todos los usuarios quien tenga como minimo este rango de score
-        $req = AppUser::withSum('tickets',"score")->get();
+        $req = AppUser::withSum([
+            'tickets' => fn ($query) => $query->where('status', 1)
+        ], "score")->get();
         $data = [];
         
 
@@ -38,10 +40,12 @@ class LeaderBoard extends Authenticatable
                 if ($key->tickets_sum_score >= $score_min) {
                    
                     $data[] = [
+                        'user_id' => $key->id,
                         'ID' => "LI0".$key->id,
                         'name' => $key->name,
                         'email' => $key->email,
                         'Score' => (int)$key->tickets_sum_score,
+                        'Ticket' => $key->tickets
                     ];
                 }
             }    
