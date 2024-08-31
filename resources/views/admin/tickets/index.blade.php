@@ -66,6 +66,8 @@
                                                     <span class="badge badge-soft-success">Validado</span>
                                                 @elseIf($row->status == 2)
                                                     <span class="badge badge-soft-danger">Denegado</span>
+                                                @elseIf($row->status == 3)
+                                                    <span class="badge badge-soft-info">Intercambiado</span>
                                                 @elseIf($row->status == 0)
                                                     <span class="badge badge-soft-warning">Sin validar</span>
                                                 @endif
@@ -73,11 +75,13 @@
                                             </td>
 
                                             <td style="text-align: right"> 
+                                                @if ($row->status != 3)
                                                 <a href="{{ Asset($link .'view/'. $row->id) }}"
                                                     class="btn m-b-15 ml-2 mr-2 btn-md btn-success"
                                                     data-toggle="tooltip" data-placement="top"
                                                     data-original-title="Editar Ticket"><i
                                                         class="mdi mdi-border-color"></i></a>
+                                                @endif
                                             </td>
                                         </tr>
                                     @endforeach
