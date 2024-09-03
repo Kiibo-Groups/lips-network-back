@@ -140,4 +140,40 @@ class Tickets extends Authenticatable
 
         return $data;
     }
+
+    public function getallTicketExport()
+    {
+       // where('status',0)->
+        $req = Tickets::OrderBy('status','ASC')->get();
+        $data = [];
+
+        foreach ($req as $key) {
+
+            $user = AppUser::where('id',$key->app_user_id)->withCount('Tickets')
+            ->withSum('tickets',"score")->first();
+
+            $tickets_aprov = Tickets::where("app_user_id",$key->app_user_id)->where('status',1)->count();
+            $tickets_deneg  = Tickets::where('app_user_id',$key->app_user_id)->where('status',2)->count();
+ 
+            $data[] = (object)[
+                'id' => $key->id,
+                'app_user_id' => $key->app_user_id,
+                'imagen' => asset('upload/tickets/'.$key->imagen),
+                'fecha' => $key->fecha,
+                'valor' => $key->valor,
+                'score' => $key->score,
+                'description' => $key->description,
+                'status' => $key->status,
+                'usuario' => $key->usuario,
+                'tickets_count' => $user->tickets_count,
+                'tickets_sum_score' => $user->tickets_sum_score,
+                'tickets_aprov' => $tickets_aprov,
+                'tickets_deneg' => $tickets_deneg,
+                'Category'  => ($key->Category) ? $key->Category->name : 'Sin definir'
+            ];
+        }
+
+        return $data;
+    }
+ 
 }

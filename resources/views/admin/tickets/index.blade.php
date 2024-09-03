@@ -11,6 +11,14 @@
                 <div class="col-md-12">
                     <div class="card py-3 m-b-30">
 
+                        <div class="row">
+                            <div class="col-md-12" style="text-align: right;">
+                                <a href="{{ Asset($link.'exportData_tickets') }}" class="btn m-b-15 ml-2 mr-2 btn-rounded btn-warning">
+                                    Descargar Excel    
+                                </a>
+                            </div>
+                        </div>
+
                         <div class="card-body">
                             <table class="table table-hover table-striped">
                                 <thead>

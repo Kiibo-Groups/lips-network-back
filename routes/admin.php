@@ -208,6 +208,7 @@ Route::group(['namespace' => 'Admin','prefix' => env('admin')], function(){
         Route::get('tickets','TicketsController@index');
         Route::get('tickets/view/{id}','TicketsController@ViewTicket');
         Route::patch('ticket_edit/{id}','TicketsController@ticket_edit');
+        Route::get('tickets/exportData_tickets','TicketsController@exportData_tickets');
 
 
         

@@ -1,17 +1,13 @@
 <?php namespace App\Http\Controllers\Admin;
 
-use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Auth;
-
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\TicketsExport;
 use App\Models\Tickets;
 use App\Models\Admin;
 use App\Models\CategoryStore;
-use DB;
-use Validator;
-use Redirect;
-use IMS;
+ 
 class TicketsController extends Controller {
 
 	public $folder  = "admin/tickets.";
@@ -64,7 +60,11 @@ class TicketsController extends Controller {
         return redirect(env('admin').'/tickets')->with('message','El ticket se ha actualizado Correctamente!!');
         // return response()->json($request->all());
     }
- 
+	
+	public function exportData_tickets()
+	{
+		return Excel::download(new TicketsExport, 'list_tickets.xlsx');
+	}
 
 	/*
 	|---------------------------------------------
