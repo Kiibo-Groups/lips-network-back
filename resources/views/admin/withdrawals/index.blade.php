@@ -26,8 +26,7 @@
                                     @foreach ($data as $row)
                                         <tr>
                                             <td>
-                                                &#64;LI0{{ $row->usuario->id }}<br />
-                                                <small>{{ $row->usuario->name }}</small>
+                                                &#64;LI0{{ $row->usuario->id }}
                                             </td>
                                             <td>
                                                 <span class="badge badge-soft-success">{{ $row->bank }}</span>
