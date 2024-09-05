@@ -20,7 +20,7 @@
                             <table class="table table-hover table-striped">
                                 <thead>
                                     <tr>
-                                        <th>Usuario</th> 
+                                        <th>ID</th> 
                                         <th>Fecha de registro</th>
                                         <th>Tickets enviados</th>
                                         <th>Wallet</th>
@@ -35,8 +35,7 @@
                                     @foreach ($data as $row)
                                         <tr>
                                             <td>
-                                                {{ $row->name }}
-                                                <br /><small>({{ $row->email }})</small>
+                                                &#64;LI0{{$row->id}}
                                             </td> 
                                             <td>
                                                 <span class="badge bg-warning text-dark">{{ date('d-M-Y', strtotime($row->created_at)) }}</span>

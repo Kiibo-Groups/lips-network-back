@@ -18,7 +18,7 @@
                             <table class="table table-hover table-striped">
                                 <thead>
                                     <tr>
-                                        <th>Usuario Ganador</th>
+                                        <th>ID Ganador</th>
                                         <th>Lugar Ganador</th>
                                         <th>Recompensa</th>
                                         <th>Fecha de sorteo</th> 
@@ -28,8 +28,7 @@
                                     @foreach ($data as $row)
                                         <tr>
                                             <td>
-                                                &#64;LI0{{ $row->usuario->id }}<br />
-                                                <small>{{ $row->usuario->name }}</small>
+                                                &#64;LI0{{ $row->usuario->id }}
                                             </td>
                                             <td>
                                                 <span class="badge badge-soft-success"># {{ $row->place_reward }}</span>

@@ -6,7 +6,7 @@
 	<!-- begin sidebar branding-->
 	<span class="admin-brand-content font-secondary">
 		<a href="{{ Asset(env('admin').'/home') }}">  
-			<img src="{{ asset('assets/img/logo_black.png') }}" alt="">
+			<img src="{{ asset('assets/img/logo_black.png') }}" alt="logo" style="max-width: 50%;">
 		</a>
 	</span>
 	<!-- end sidebar branding-->
