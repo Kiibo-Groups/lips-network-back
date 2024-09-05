@@ -43,8 +43,7 @@
                                                 </a>
                                             </td>
                                             <td>
-                                                &#64;LI0{{$row->app_user_id}}<br />
-                                                <small>({{ucWords($row->usuario->email)}})</small>
+                                                &#64;LI0{{$row->app_user_id}}
                                             </td>
                                             <td>
                                                 @if ($row->valor != null)
